@@ -1,0 +1,13 @@
+version: '2'
+volumes:
+    mongodbdata:
+        external: false
+
+services:
+    mongodb:
+        image: mongo
+        volumes:
+          - 'mongodbdata:/data'
+        ports:
+          - '27017:27017'
+        command: mongod --smallfiles --logpath=/dev/null
