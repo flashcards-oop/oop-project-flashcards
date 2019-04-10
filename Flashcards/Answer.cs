@@ -1,7 +1,9 @@
 namespace Flashcards
 {
-    public class Answer
+    public abstract class Answer
     {
-        
+        public int Id { get; set; }
+
+        public abstract bool IsTheSameAs(Answer other);
     }
 }
