@@ -1,4 +1,4 @@
-namespace ConsoleApplication1
+namespace Flashcards
 {
     public class QuizBuilder
     {

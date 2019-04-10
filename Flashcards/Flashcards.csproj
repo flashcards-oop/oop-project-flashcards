@@ -7,7 +7,7 @@
     <ProjectGuid>{7C1E49CC-54B0-4FBF-849B-F49382EDC53C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <RootNamespace>Flashcards</RootNamespace>
     <AssemblyName>Flashcards</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

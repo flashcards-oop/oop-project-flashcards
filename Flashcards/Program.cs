@@ -1,4 +1,4 @@
-﻿namespace ConsoleApplication1
+﻿namespace Flashcards
 {
     internal class Program
     {
