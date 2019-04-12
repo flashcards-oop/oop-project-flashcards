@@ -10,9 +10,9 @@ namespace Flashcards
 
         public override bool IsTheSameAs(Answer otherAnswer)
         {
-            if (otherAnswer == null || otherAnswer as MatchingAnswer == null)
+            if (!(otherAnswer is MatchingAnswer))
                 return false;
-            var otherMatchingAnswer = otherAnswer as MatchingAnswer;
+            var otherMatchingAnswer = (MatchingAnswer) otherAnswer;
 
             if (!ContnainsSameDefinitionsAs(otherMatchingAnswer))
                 return false;

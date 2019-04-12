@@ -6,9 +6,9 @@
 
         public override bool IsTheSameAs(Answer otherAnswer)
         {
-            if (otherAnswer == null || otherAnswer as ChoiceAnswer == null)
+            if (!(otherAnswer is ChoiceAnswer))
                 return false;
-            return Choice == (otherAnswer as ChoiceAnswer).Choice;
+            return Choice == ((ChoiceAnswer) otherAnswer).Choice;
         }
     }
 }
