@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -11,6 +10,9 @@ namespace Flashcards
     {
         private readonly IMongoCollection<BsonDocument> cards;
         private readonly IMongoCollection<BsonDocument> collections;
+
+        private static readonly Func<string, FilterDefinition<BsonDocument>> IdFilter = 
+            id => Builders<BsonDocument>.Filter.Eq("_id", id);
         
         public Mongo()
         {
@@ -27,47 +29,68 @@ namespace Flashcards
         
         public Card GetCard(string id)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
-            var card = cards.Find(filter).First();
+            var card = cards.Find(IdFilter(id)).First();
             return BsonSerializer.Deserialize<Card>(card);
         }
         
         public List<Card> GetAllCards()
         {
-            var allCards = cards.AsQueryable();
-            var lol = new List<Card>();
-            foreach (var card in allCards)
+            var allCards = new List<Card>();
+            foreach (var card in cards.AsQueryable())
             {
-                lol.Add(BsonSerializer.Deserialize<Card>(card));
+                allCards.Add(BsonSerializer.Deserialize<Card>(card));
             }
 
-            return lol;
+            return allCards;
         }
 
         public void DeleteCard(string id)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", id);
-            cards.FindOneAndDelete(filter);
+            cards.FindOneAndDelete(IdFilter(id));
         }
 
         public void AddCollection(Collection collection)
         {
-            collections.InsertOne(collection.ToBsonDocument());
+            foreach (var card in collection.Cards)
+            {
+                AddCard(card);
+            }
+            var mongoCollection = MongoCollection.FromCollection(collection);
+            collections.InsertOne(mongoCollection.ToBsonDocument());
         }
         
         public Collection GetCollection(string id)
         {
-            throw new System.NotImplementedException();
+            var mongoCollection = collections.Find(IdFilter(id)).First();
+            var deserializedCollection = BsonSerializer.Deserialize<MongoCollection>(mongoCollection);
+            var collection = new Collection(deserializedCollection.Name, deserializedCollection.Id);
+            foreach (var cardId in deserializedCollection.CardsId)
+            {
+                collection.Cards.Add(GetCard(cardId));
+            }
+
+            return collection;
         }
 
         public List<Collection> GetAllCollections()
         {
-            throw new System.NotImplementedException();
+            var allCollections = new List<Collection>();
+            foreach (var mongoCollection in collections.AsQueryable())
+            {
+                var deserializedCollection = BsonSerializer.Deserialize<MongoCollection>(mongoCollection);
+                var collection = new Collection(deserializedCollection.Name, deserializedCollection.Id);
+                foreach (var cardId in deserializedCollection.CardsId)
+                {
+                    collection.Cards.Add(GetCard(cardId));
+                }
+            }
+
+            return allCollections;
         }
         
         public void DeleteCollection(string id)
         {
-            throw new NotImplementedException();
+            collections.FindOneAndDelete(IdFilter(id));
         }
     }
 }

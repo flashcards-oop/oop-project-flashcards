@@ -16,27 +16,28 @@ namespace FlashcardsTests
             mongo = new Mongo();
         }
 
-        /*[TearDown]
+        [TearDown]
         public void Clear()
         {
             mongo.Clear();
-        }*/
+        }
         
         [Test]
         public void InsertCards()
         {
-            var card = new Card("Lol", "Kek");
+            var card = new Card("Solomon is a", "human");
             mongo.AddCard(card);
 
             var insertedCard = mongo.GetCard(card.Id);
-            Assert.That(card.Id.Equals(insertedCard.Id) && card.Term.Equals(insertedCard.Term) &&
-                        card.Definition.Equals(insertedCard.Definition));
+            Assert.That(card.Id, Is.EqualTo(insertedCard.Id));
+            Assert.That(card.Term, Is.EqualTo(insertedCard.Term));
+            Assert.That(card.Definition, Is.EqualTo(insertedCard.Definition));
         }
         
         [Test]
         public void DeleteCard()
         {
-            var card = new Card("Lol", "Kek");
+            var card = new Card("Solomon is a", "human");
             mongo.AddCard(card);
             Assert.DoesNotThrow(() => mongo.GetCard(card.Id));
             mongo.DeleteCard(card.Id);
@@ -46,24 +47,33 @@ namespace FlashcardsTests
         [Test]
         public void ReturnListOfCards()
         {
-            var card1 = new Card("Lol", "Kek");
-            var card2 = new Card("Lol", "Kek");
-            var card3 = new Card("Lol", "Kek");
+            var card1 = new Card("Solomon is a", "human");
+            var card2 = new Card("Programmer is", "human");
+            var card3 = new Card("Programmer is", "god");
             
             mongo.AddCard(card1);
             mongo.AddCard(card2);
             mongo.AddCard(card3);
 
+            var allCards = mongo.GetAllCards();
+            Assert.That(allCards.Count, Is.EqualTo(3));
+
             foreach (var card in mongo.GetAllCards())
             {
-                Assert.That(card.Id.Equals(card1.Id) || card.Id.Equals(card2.Id) || card.Id.Equals(card3.Id));
+                Assert.True(card.Id.Equals(card1.Id) || card.Id.Equals(card2.Id) || card.Id.Equals(card3.Id));
             }
         }
 
         [Test]
         public void InsertCollections()
         {
-            var collection = new Collection("Lol", cards: new List<Card> {new Card("lol", "kek")});
+            var collection = new Collection("Important terms", 
+                cards: new List<Card>
+                {
+                    new Card("Solomon is a", "human"),
+                    new Card("Programmer is", "human"),
+                    new Card("Programmer is", "god")
+                });
             mongo.AddCollection(collection);
         }
     }

@@ -75,6 +75,7 @@
     <Compile Include="QuizBuilder.cs" />
     <Compile Include="Storage\IStorage.cs" />
     <Compile Include="Storage\Mongo.cs" />
+    <Compile Include="Storage\MongoCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

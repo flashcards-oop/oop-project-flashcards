@@ -6,10 +6,10 @@ namespace Flashcards
 {
     public class Collection
     {
-        public string Id { get; }
+        public string Id { get; protected set; }
         [BsonElement]
-        public string Name { get; }
-        [BsonElement]
+        public string Name { get; protected set; }
+        [BsonIgnoreIfNull]
         public List<Card> Cards { get; }
         
         [BsonConstructor]
@@ -18,6 +18,11 @@ namespace Flashcards
             Id = id ?? Guid.NewGuid().ToString();
             Name = name;
             Cards = cards ?? new List<Card>();
+        }
+
+        protected Collection()
+        {
+            
         }
     }
 }
