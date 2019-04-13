@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Flashcards;
 using NUnit.Framework;
 
@@ -39,9 +39,8 @@ namespace FlashcardsTests
         {
             var card = new Card("Solomon is a", "human");
             mongo.AddCard(card);
-            Assert.DoesNotThrow(() => mongo.GetCard(card.Id));
             mongo.DeleteCard(card.Id);
-            Assert.Throws<InvalidOperationException>(() => mongo.GetCard(card.Id));
+            Assert.IsNull(mongo.GetCard(card.Id));
         }
 
         [Test]
@@ -56,7 +55,7 @@ namespace FlashcardsTests
             mongo.AddCard(card3);
 
             var allCards = mongo.GetAllCards();
-            Assert.That(allCards.Count, Is.EqualTo(3));
+            Assert.That(allCards.AsEnumerable().Count(), Is.EqualTo(3));
 
             foreach (var card in mongo.GetAllCards())
             {
@@ -65,7 +64,7 @@ namespace FlashcardsTests
         }
 
         [Test]
-        public void InsertCollections()
+        public void InsertCollection()
         {
             var collection = new Collection("Important terms", 
                 cards: new List<Card>
@@ -75,6 +74,60 @@ namespace FlashcardsTests
                     new Card("Programmer is", "god")
                 });
             mongo.AddCollection(collection);
+        }
+
+        [Test]
+        public void DeleteCollection()
+        {
+            var collection = new Collection("Important terms", 
+                cards: new List<Card>
+                {
+                    new Card("Solomon is a", "human"),
+                    new Card("Programmer is", "human"),
+                    new Card("Programmer is", "god")
+                });
+            mongo.AddCollection(collection);
+            mongo.DeleteCollection(collection.Id);
+            Assert.IsNull(mongo.GetCollection(collection.Id));
+        }
+
+        [Test]
+        public void AddCardToCollection()
+        {
+            var collection = new Collection("Important terms", 
+                cards: new List<Card>
+                {
+                    new Card("Solomon is a", "human"),
+                    new Card("Programmer is", "human"),
+                    new Card("Programmer is", "god")
+                });
+            mongo.AddCollection(collection);
+            
+            var card = new Card("Solomon is a", "god");
+            mongo.AddCard(card);
+            
+            mongo.AddCardToCollection(collection.Id, card.Id);
+            var updatedCollection = mongo.GetCollection(collection.Id);
+            Assert.That(updatedCollection.Cards.Count, Is.EqualTo(4));
+            Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.Member(card.Id));
+        }
+
+        [Test]
+        public void RemoveCardFromCollection()
+        {
+            var collection = new Collection("Important terms", 
+                cards: new List<Card>
+                {
+                    new Card("Solomon is a", "human"),
+                    new Card("Programmer is", "human"),
+                    new Card("Programmer is", "god")
+                });
+            mongo.AddCollection(collection);
+            
+            mongo.RemoveCardFromCollection(collection.Id, collection.Cards[0].Id);
+            var updatedCollection = mongo.GetCollection(collection.Id);
+            Assert.That(updatedCollection.Cards.Count, Is.EqualTo(2));
+            Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.No.Member(collection.Cards[0].Id));
         }
     }
 

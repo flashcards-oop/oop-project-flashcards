@@ -1,96 +1,154 @@
 using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
+using System.Linq;
 using MongoDB.Driver;
 
 namespace Flashcards
 {
     public class Mongo : IStorage
     {
-        private readonly IMongoCollection<BsonDocument> cards;
-        private readonly IMongoCollection<BsonDocument> collections;
+        private readonly IMongoCollection<Card> cards;
+        private readonly IMongoCollection<MongoCollection> collections;
+        private readonly IClientSession session;
 
-        private static readonly Func<string, FilterDefinition<BsonDocument>> IdFilter = 
-            id => Builders<BsonDocument>.Filter.Eq("_id", id);
+        private static readonly Func<string, FilterDefinition<MongoCollection>> CollectionFilter = 
+            id => Builders<MongoCollection>.Filter.Eq("_id", id);
+        private static readonly Func<string, FilterDefinition<Card>> CardFilter = 
+            id => Builders<Card>.Filter.Eq("_id", id);
+
         
         public Mongo()
         {
             var client = new MongoClient();
             var database = client.GetDatabase("flashcards");
-            cards = database.GetCollection<BsonDocument>("cards");
-            collections = database.GetCollection<BsonDocument>("collections");
+            cards = database.GetCollection<Card>("cards");
+            collections = database.GetCollection<MongoCollection>("collections");
+            session = client.StartSession();
         }
         
         public void AddCard(Card card)
         {
-            cards.InsertOne(card.ToBsonDocument());
+            try
+            {
+                cards.InsertOne(card);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new Exception("Card already exists");
+            }
         }
         
         public Card GetCard(string id)
         {
-            var card = cards.Find(IdFilter(id)).First();
-            return BsonSerializer.Deserialize<Card>(card);
+            try
+            {
+                return cards.Find(CardFilter(id)).First();
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
         }
         
-        public List<Card> GetAllCards()
+        public IEnumerable<Card> GetAllCards()
         {
-            var allCards = new List<Card>();
-            foreach (var card in cards.AsQueryable())
-            {
-                allCards.Add(BsonSerializer.Deserialize<Card>(card));
-            }
-
-            return allCards;
+            return cards.AsQueryable();
         }
 
         public void DeleteCard(string id)
         {
-            cards.FindOneAndDelete(IdFilter(id));
+            cards.FindOneAndDelete(CardFilter(id));
         }
 
         public void AddCollection(Collection collection)
         {
-            foreach (var card in collection.Cards)
+            session.StartTransaction();
+            try
             {
-                AddCard(card);
+                foreach (var card in collection.Cards)
+                {
+                    try
+                    {
+                        AddCard(card);
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                }
+
+                var mongoCollection = MongoCollection.FromCollection(collection);
+                collections.InsertOne(mongoCollection);
+                session.CommitTransaction();
             }
-            var mongoCollection = MongoCollection.FromCollection(collection);
-            collections.InsertOne(mongoCollection.ToBsonDocument());
+            catch (InvalidOperationException)
+            {
+                session.AbortTransaction();
+                throw new Exception("Collection already exists");
+            }
         }
         
         public Collection GetCollection(string id)
         {
-            var mongoCollection = collections.Find(IdFilter(id)).First();
-            var deserializedCollection = BsonSerializer.Deserialize<MongoCollection>(mongoCollection);
-            var collection = new Collection(deserializedCollection.Name, deserializedCollection.Id);
-            foreach (var cardId in deserializedCollection.CardsId)
+            try
             {
-                collection.Cards.Add(GetCard(cardId));
-            }
-
-            return collection;
-        }
-
-        public List<Collection> GetAllCollections()
-        {
-            var allCollections = new List<Collection>();
-            foreach (var mongoCollection in collections.AsQueryable())
-            {
-                var deserializedCollection = BsonSerializer.Deserialize<MongoCollection>(mongoCollection);
-                var collection = new Collection(deserializedCollection.Name, deserializedCollection.Id);
-                foreach (var cardId in deserializedCollection.CardsId)
+                var mongoCollection = collections.Find(CollectionFilter(id)).First();
+                var collection = new Collection(mongoCollection.Name, mongoCollection.Id);
+                foreach (var cardId in mongoCollection.CardsId)
                 {
                     collection.Cards.Add(GetCard(cardId));
                 }
-            }
 
-            return allCollections;
+                return collection;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<Collection> GetAllCollections()
+        {
+            foreach (var id in collections.AsQueryable().Select(c => c.Id))
+            {
+               yield return GetCollection(id);
+            }
         }
         
         public void DeleteCollection(string id)
         {
-            collections.FindOneAndDelete(IdFilter(id));
+            collections.FindOneAndDelete(CollectionFilter(id));
+        }
+
+        public void AddCardToCollection(string collectionId, string cardId)
+        {
+            session.StartTransaction();
+            try
+            {
+                var update = Builders<MongoCollection>.Update.Push(c => c.CardsId, cardId);
+                collections.UpdateOne(CollectionFilter(collectionId), update);
+                session.CommitTransaction();
+            }
+            catch (InvalidOperationException)
+            {
+                session.AbortTransaction();
+                throw new Exception();
+            }
+        }
+
+        public void RemoveCardFromCollection(string collectionId, string cardId)
+        {
+            session.StartTransaction();
+            try
+            {
+                var update = Builders<MongoCollection>.Update.Pull(c => c.CardsId, cardId);
+                collections.FindOneAndUpdate(CollectionFilter(collectionId), update);
+                session.CommitTransaction();
+            }
+            catch (InvalidOperationException)
+            {
+                session.AbortTransaction();
+            }
         }
     }
 }

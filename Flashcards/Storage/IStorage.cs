@@ -6,12 +6,15 @@ namespace Flashcards
     {
         void AddCard(Card card);
         Card GetCard(string id);
-        List<Card> GetAllCards();
+        IEnumerable<Card> GetAllCards();
         void DeleteCard(string id);
         
         void AddCollection(Collection collection);
         Collection GetCollection(string id);
-        List<Collection> GetAllCollections();
+        IEnumerable<Collection> GetAllCollections();
         void DeleteCollection(string id);
+
+        void AddCardToCollection(string collectionId, string cardId);
+        void RemoveCardFromCollection(string collectionId, string cardId);
     }
 }
