@@ -11,22 +11,17 @@ namespace FlashcardsTest
         [Test]
         public void BeEqual_WhenEqualMatches()
         {
-            var first = new MatchingAnswer
+            var first = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Solomon is a", "human" },
-                    { "Programmer is", "god" },
-                }
-            };
-            var second = new MatchingAnswer
+                {"Solomon is a", "human"},
+                {"Programmer is", "god"}
+            });
+
+            var second = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Programmer is", "god" },
-                    { "Solomon is a", "human" },
-                }
-            };
+                {"Programmer is", "god"},
+                {"Solomon is a", "human"},
+            });
 
             Assert.IsTrue(first.IsTheSameAs(second));
         }
@@ -34,20 +29,14 @@ namespace FlashcardsTest
         [Test]
         public void NotBeEqual_WhenTermsAreDifferent()
         {
-            var first = new MatchingAnswer
+            var first = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Programmer is", "human" },
-                }
-            };
-            var second = new MatchingAnswer
+                {"Programmer is", "human"},
+            });
+            var second = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Programmer is", "god" },
-                }
-            };
+                {"Programmer is", "god"},
+            });
 
             Assert.IsFalse(first.IsTheSameAs(second));
         }
@@ -56,21 +45,15 @@ namespace FlashcardsTest
         [Test]
         public void NotBeEqual_WhenFirstHasExtraDefinitions()
         {
-            var first = new MatchingAnswer
+            var first = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Solomon is a", "human" },
-                    { "Programmer is", "god" },
-                }
-            };
-            var second = new MatchingAnswer
+                {"Solomon is a", "human"},
+                {"Programmer is", "god"},
+            });
+            var second = new MatchingAnswer(new Dictionary<string, string>
             {
-                Matches = new Dictionary<string, string>
-                {
-                    { "Solomon is a", "human" },
-                }
-            };
+                {"Solomon is a", "human"},
+            });
 
             Assert.IsFalse(first.IsTheSameAs(second));
         }

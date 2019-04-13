@@ -6,63 +6,69 @@ namespace Flashcards
 {
     public class TestBuilder
     {
-        private readonly List<Task> test;
+        private readonly List<Exercise> exercises;
         private readonly List<Card> cards;
         private Random Random { get; }
-        private readonly Dictionary<Type, Func<Task>> callinYourMother;
+        private readonly Dictionary<Type, Func<Exercise>> exerciseGenerators;
+        private int choicesNumber = 4;
+        private int matchingNumber = 3;
 
         public TestBuilder(List<Card> cards)
         {
             this.cards = cards;
-            test = new List<Task>();
+            exercises = new List<Exercise>();
             Random = new Random();
-            callinYourMother = new Dictionary<Type, Func<Task>>
+            exerciseGenerators = new Dictionary<Type, Func<Exercise>>
             {
                 [typeof(ChoiceQuestion)] = GenerateChoicesTasks,
                 [typeof(MatchingQuestion)] = GenerateMatchingTasks,
-                [typeof(SimpleQuestion)] = GenerateSimpleTasks
+                [typeof(OpenAnswerQuestion)] = GenerateSimpleTasks
             };
         }
 
-        public List<Task> Build()
+        public List<Exercise> Build()
         {
-            return test;
+            return exercises;
         }
 
-        public void GenerateTasks(int tasksNumber, Type questionsType)
+        public void GenerateTasks(int exerciseNumber, Type questionsType)
         {
-            if (tasksNumber > cards.Count)
-                tasksNumber = cards.Count;
-            var tasksCounter = 0;
-            while (tasksCounter < tasksNumber)
+            if (exerciseNumber > cards.Count)
+                exerciseNumber = cards.Count;
+            var exerciseCounter = 0;
+            while (exerciseCounter < exerciseNumber)
             {
-                var task = callinYourMother[questionsType]();
-                if (test.Contains(task))
+                var task = exerciseGenerators[questionsType]();
+                if (exercises.Contains(task))
                     continue;
-                test.Add(task);
-                tasksCounter++;
+                exercises.Add(task);
+                exerciseCounter++;
             }
         }
 
-        private Task GenerateMatchingTasks()
+        private Exercise GenerateMatchingTasks()
         {
             var answer = new Dictionary<string, string>();
-            for (var i = 0; i < 5; i++)
+            var matchingCounter = 0;
+            while (matchingCounter < matchingNumber)
             {
                 var index = Random.Next(cards.Count);
+                if (answer.ContainsKey(cards[index].Term))
+                    continue;
                 answer[cards[index].Term] = cards[index].Definition;
+                matchingCounter++;
             }
             var terms = answer.Keys.ToArray();
             terms.Shuffle();
             var definitions = answer.Values.ToArray();
             definitions.Shuffle();
-            return new Task(new MatchingAnswer(answer), new MatchingQuestion(terms, definitions));
+            return new Exercise(new MatchingAnswer(answer), new MatchingQuestion(terms, definitions));
         }
 
-        private Task GenerateChoicesTasks()
+        private Exercise GenerateChoicesTasks()
         {
             var index = Random.Next(cards.Count);
-            var choices = new string[4];
+            var choices = new string[choicesNumber];
             var definition = cards[index].Definition;
             var answer = cards[index].Term;
             choices[0] = answer;
@@ -75,13 +81,13 @@ namespace Flashcards
                 choices[i] = newChoice;
             }
             choices.Shuffle();
-            return new Task(new ChoiceAnswer(answer), new ChoiceQuestion(definition, choices));
+            return new Exercise(new ChoiceAnswer(answer), new ChoiceQuestion(definition, choices));
         }
 
-        private Task GenerateSimpleTasks()
+        private Exercise GenerateSimpleTasks()
         {
             var index = Random.Next(cards.Count);
-            return new Task(new SimpleAnswer(cards[index].Term), new SimpleQuestion(cards[index].Definition));
+            return new Exercise(new OpenAnswer(cards[index].Term), new OpenAnswerQuestion(cards[index].Definition));
         }
     }
 }
