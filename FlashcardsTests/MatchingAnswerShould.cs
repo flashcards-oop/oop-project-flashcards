@@ -1,9 +1,8 @@
-﻿using System;
-using NUnit.Framework;
+﻿using System.Collections.Generic;
 using Flashcards;
-using System.Collections.Generic;
+using NUnit.Framework;
 
-namespace FlashcardsTest
+namespace FlashcardsTests
 {
     [TestFixture]
     public class MatchingAnswerShould
