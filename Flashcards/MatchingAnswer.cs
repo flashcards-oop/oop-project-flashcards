@@ -8,6 +8,11 @@ namespace Flashcards
     {
         public Dictionary<string, string> Matches;
 
+        public MatchingAnswer(Dictionary<string, string> matches)
+        {
+            Matches = matches;
+        }
+
         public override bool IsTheSameAs(Answer otherAnswer)
         {
             if (!(otherAnswer is MatchingAnswer))

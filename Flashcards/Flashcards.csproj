@@ -43,13 +43,15 @@
     <Compile Include="ChoiceAnswer.cs" />
     <Compile Include="ChoiceQuestion.cs" />
     <Compile Include="Collection.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="IStorage.cs" />
     <Compile Include="MatchingAnswer.cs" />
     <Compile Include="MatchingQuestion.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Question.cs" />
-    <Compile Include="QuizBuilder.cs" />
+    <Compile Include="Task.cs" />
+    <Compile Include="TestBuilder.cs" />
     <Compile Include="SimpleAnswer.cs" />
     <Compile Include="SimpleQuestion.cs" />
   </ItemGroup>

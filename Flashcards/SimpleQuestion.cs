@@ -8,6 +8,11 @@ namespace Flashcards
 {
     public class SimpleQuestion : Question
     {
-        public string Definition { get; set; }
+        public string Definition { get; }
+
+        public SimpleQuestion(string definition)
+        {
+            Definition = definition;
+        }
     }
 }
