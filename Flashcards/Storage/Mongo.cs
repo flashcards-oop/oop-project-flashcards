@@ -11,12 +11,7 @@ namespace Flashcards
         private readonly IMongoCollection<MongoCollection> collections;
         private readonly IClientSession session;
 
-        private static readonly Func<string, FilterDefinition<MongoCollection>> CollectionFilter = 
-            id => Builders<MongoCollection>.Filter.Eq("_id", id);
-        private static readonly Func<string, FilterDefinition<Card>> CardFilter = 
-            id => Builders<Card>.Filter.Eq("_id", id);
 
-        
         public Mongo()
         {
             var client = new MongoClient();
@@ -38,16 +33,9 @@ namespace Flashcards
             }
         }
         
-        public Card GetCard(string id)
+        public Card FindCard(string id)
         {
-            try
-            {
-                return cards.Find(CardFilter(id)).First();
-            }
-            catch (InvalidOperationException)
-            {
-                return null;
-            }
+            return cards.Find(c => c.Id == id).FirstOrDefault();
         }
         
         public IEnumerable<Card> GetAllCards()
@@ -57,7 +45,7 @@ namespace Flashcards
 
         public void DeleteCard(string id)
         {
-            cards.FindOneAndDelete(CardFilter(id));
+            cards.FindOneAndDelete(c => c.Id == id);
         }
 
         public void AddCollection(Collection collection)
@@ -88,36 +76,33 @@ namespace Flashcards
             }
         }
         
-        public Collection GetCollection(string id)
+        public Collection FindCollection(string id)
         {
-            try
-            {
-                var mongoCollection = collections.Find(CollectionFilter(id)).First();
-                var collection = new Collection(mongoCollection.Name, mongoCollection.Id);
-                foreach (var cardId in mongoCollection.CardsId)
-                {
-                    collection.Cards.Add(GetCard(cardId));
-                }
-
-                return collection;
-            }
-            catch (InvalidOperationException)
+            var mongoCollection = collections.Find(c => c.Id == id).FirstOrDefault();
+            if (mongoCollection is null)
             {
                 return null;
             }
+            var collection = new Collection(mongoCollection.Name, mongoCollection.Id);
+            foreach (var cardId in mongoCollection.CardsId)
+            {
+                collection.Cards.Add(FindCard(cardId));
+            }
+
+            return collection;
         }
 
         public IEnumerable<Collection> GetAllCollections()
         {
             foreach (var id in collections.AsQueryable().Select(c => c.Id))
             {
-               yield return GetCollection(id);
+               yield return FindCollection(id);
             }
         }
         
         public void DeleteCollection(string id)
         {
-            collections.FindOneAndDelete(CollectionFilter(id));
+            collections.FindOneAndDelete(c => c.Id == id);
         }
 
         public void AddCardToCollection(string collectionId, string cardId)
@@ -126,13 +111,13 @@ namespace Flashcards
             try
             {
                 var update = Builders<MongoCollection>.Update.Push(c => c.CardsId, cardId);
-                collections.UpdateOne(CollectionFilter(collectionId), update);
+                collections.UpdateOne(c => c.Id == collectionId, update);
                 session.CommitTransaction();
             }
             catch (InvalidOperationException)
             {
                 session.AbortTransaction();
-                throw new Exception();
+                throw new Exception("No collection with such id");
             }
         }
 
@@ -142,12 +127,13 @@ namespace Flashcards
             try
             {
                 var update = Builders<MongoCollection>.Update.Pull(c => c.CardsId, cardId);
-                collections.FindOneAndUpdate(CollectionFilter(collectionId), update);
+                collections.FindOneAndUpdate(c => c.Id == collectionId, update);
                 session.CommitTransaction();
             }
             catch (InvalidOperationException)
             {
                 session.AbortTransaction();
+                throw new Exception("No collection or card with such id");
             }
         }
     }

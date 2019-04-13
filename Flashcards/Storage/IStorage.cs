@@ -5,12 +5,12 @@ namespace Flashcards
     public interface IStorage
     {
         void AddCard(Card card);
-        Card GetCard(string id);
+        Card FindCard(string id);
         IEnumerable<Card> GetAllCards();
         void DeleteCard(string id);
         
         void AddCollection(Collection collection);
-        Collection GetCollection(string id);
+        Collection FindCollection(string id);
         IEnumerable<Collection> GetAllCollections();
         void DeleteCollection(string id);
 

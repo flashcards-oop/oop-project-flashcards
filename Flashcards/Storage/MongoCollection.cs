@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Flashcards
@@ -16,7 +15,7 @@ namespace Flashcards
         }
 
         [BsonConstructor("Name", "Id", "CardsId")]
-        public MongoCollection(string name, string id, List<string> cards)
+        private MongoCollection(string name, string id, List<string> cards)
         {
             Name = name;
             Id = id;

@@ -28,7 +28,7 @@ namespace FlashcardsTests
             var card = new Card("Solomon is a", "human");
             mongo.AddCard(card);
 
-            var insertedCard = mongo.GetCard(card.Id);
+            var insertedCard = mongo.FindCard(card.Id);
             Assert.That(card.Id, Is.EqualTo(insertedCard.Id));
             Assert.That(card.Term, Is.EqualTo(insertedCard.Term));
             Assert.That(card.Definition, Is.EqualTo(insertedCard.Definition));
@@ -40,7 +40,7 @@ namespace FlashcardsTests
             var card = new Card("Solomon is a", "human");
             mongo.AddCard(card);
             mongo.DeleteCard(card.Id);
-            Assert.IsNull(mongo.GetCard(card.Id));
+            Assert.IsNull(mongo.FindCard(card.Id));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace FlashcardsTests
                 });
             mongo.AddCollection(collection);
             mongo.DeleteCollection(collection.Id);
-            Assert.IsNull(mongo.GetCollection(collection.Id));
+            Assert.IsNull(mongo.FindCollection(collection.Id));
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace FlashcardsTests
             mongo.AddCard(card);
             
             mongo.AddCardToCollection(collection.Id, card.Id);
-            var updatedCollection = mongo.GetCollection(collection.Id);
+            var updatedCollection = mongo.FindCollection(collection.Id);
             Assert.That(updatedCollection.Cards.Count, Is.EqualTo(4));
             Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.Member(card.Id));
         }
@@ -125,7 +125,7 @@ namespace FlashcardsTests
             mongo.AddCollection(collection);
             
             mongo.RemoveCardFromCollection(collection.Id, collection.Cards[0].Id);
-            var updatedCollection = mongo.GetCollection(collection.Id);
+            var updatedCollection = mongo.FindCollection(collection.Id);
             Assert.That(updatedCollection.Cards.Count, Is.EqualTo(2));
             Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.No.Member(collection.Cards[0].Id));
         }
