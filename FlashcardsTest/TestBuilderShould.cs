@@ -1,8 +1,6 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Flashcards;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FlashcardsTest
 {
@@ -28,22 +26,21 @@ namespace FlashcardsTest
                 ["Moscow"] = "is the capital of Russian Federation",
                 ["Mama"] = "Romama"
             };
-            var exercise = new Exercise(new MatchingAnswer(answer),
-                new MatchingQuestion(answer.Keys.ToArray(), answer.Values.ToArray()));
-
-            //Assert.Contains(exercise, test);
+            
+            Assert.That(test.Count, Is.EqualTo(1));
+            var question = (MatchingQuestion) test[0].Question;
+            Assert.That(question.Terms, Is.EquivalentTo(answer.Keys));
+            Assert.That(question.Definitions, Is.EquivalentTo(answer.Values));
         }
-
+        
         [Test]
         public void GenerateOpenAnswerTest()
         {
             var testBuilder = new TestBuilder(testCards);
             testBuilder.GenerateTasks(3, typeof(OpenAnswerQuestion));
             var test = testBuilder.Build();
-            var exercise = new Exercise(new OpenAnswer("London"),
-                new OpenAnswerQuestion("is the capital of Great Britain"));
-
-            Assert.Contains(exercise, test);
+            
+            Assert.That(test.Count, Is.EqualTo(3));
         }
 
         [Test]
@@ -52,11 +49,8 @@ namespace FlashcardsTest
             var testBuilder = new TestBuilder(testCards);
             testBuilder.GenerateTasks(3, typeof(ChoiceQuestion));
             var test = testBuilder.Build();
-            var exercise = new Exercise(new ChoiceAnswer("Moscow"),
-                new ChoiceQuestion("is the capital of Russian Federation",
-                    new[] { "is the capital of Great Britain", "is the capital of Russian Federation", "Romama" }));
-
-            //Assert.Contains(exercise, test);
+            
+            Assert.That(test.Count, Is.EqualTo(3));
         }
     }
 }
