@@ -1,17 +1,17 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
 using Flashcards;
-using System.Collections.Generic;
+using NUnit.Framework;
 
-namespace FlashcardsTest
+namespace FlashcardsTests
 {
     [TestFixture]
     public class TestBuilderShould
     {
         private readonly List<Card> testCards = new List<Card>
         {
-            new Card(1, "London", "is the capital of Great Britain"),
-            new Card(666, "Moscow", "is the capital of Russian Federation"),
-            new Card(13, "Mama", "Romama")
+            new Card("1", "London", "is the capital of Great Britain"),
+            new Card("666", "Moscow", "is the capital of Russian Federation"),
+            new Card("13", "Mama", "Romama")
         };
 
         [Test]
