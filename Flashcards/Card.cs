@@ -1,14 +1,20 @@
+using System;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Flashcards
 {
     public class Card
     {
-        public int Id { get; }
+        public string Id { get; }
+        [BsonElement]
         public string Term { get; }
+        [BsonElement]
         public string Definition { get; }
 
-        public Card(int id, string term, string definition)
+        [BsonConstructor]
+        public Card(string term, string definition, string id = null)
         {
-            Id = id;
+            Id = id ?? Guid.NewGuid().ToString();
             Term = term;
             Definition = definition;
         }
