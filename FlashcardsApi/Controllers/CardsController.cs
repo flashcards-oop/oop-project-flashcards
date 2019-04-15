@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
-using Microsoft.AspNetCore.Routing;
 
 namespace FlashcardsApi.Controllers
 {
@@ -10,7 +8,7 @@ namespace FlashcardsApi.Controllers
     [ApiController]
     public class CardsController : Controller
     {
-        IStorage storage;
+        private readonly IStorage storage;
 
         public CardsController(IStorage storage)
         {
