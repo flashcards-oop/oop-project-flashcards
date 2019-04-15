@@ -14,7 +14,7 @@ namespace Flashcards
 
         public Mongo()
         {
-            var client = new MongoClient();
+            var client = new MongoClient("mongodb://localhost:27017");
             var database = client.GetDatabase("flashcards");
             cards = database.GetCollection<Card>("cards");
             collections = database.GetCollection<MongoCollection>("collections");
