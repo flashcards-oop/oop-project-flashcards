@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlashcardsApi.Controllers
 {
@@ -21,8 +22,8 @@ namespace FlashcardsApi.Controllers
             return Ok(storage.GetAllCards());
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Card> GetById(string id)
+        [HttpGet("{id}", Name = "GetCardById")]
+        public ActionResult<Card> GetById([FromRoute] string id)
         {
             var card = storage.FindCard(id);
             if (card == null)
@@ -36,8 +37,7 @@ namespace FlashcardsApi.Controllers
             storage.AddCard(card);
 
             return CreatedAtRoute(
-                nameof(GetById),
-                new { cardId = card.Id });
+                "GetCardById", new { id = card.Id }, card.Id);
         }
     }
 }

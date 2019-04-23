@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Flashcards;
+using FlashcardsApi.Models;
+using System.Linq;
 
 namespace FlashcardsApi
 {
@@ -19,7 +21,15 @@ namespace FlashcardsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            AutoMapper.Mapper.Initialize(config =>
+                config.CreateMap<Collection, CollectionDto>()
+                    .ForMember(
+                        dto => dto.CardIds, 
+                        opt => opt.MapFrom(coll => coll.Cards.Select(card => card.Id))
+                    )
+            );
             services.AddSingleton<IStorage>(new Mongo());
         }
 
