@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
-using System.ComponentModel.DataAnnotations;
 
 namespace FlashcardsApi.Controllers
 {

@@ -11,7 +11,7 @@ namespace FlashcardsApi.Controllers
     [Route("api/[controller]")]
     public class CollectionsController : Controller
     {
-        private IStorage storage;
+        private readonly IStorage storage;
 
         public CollectionsController(IStorage storage)
         {
@@ -22,7 +22,7 @@ namespace FlashcardsApi.Controllers
         public ActionResult<IEnumerable<CollectionInfoDto>> GetAll()
         {
             return Ok(storage.GetAllCollections()
-                .Select(collection => Mapper.Map<CollectionInfoDto>(collection)));
+                .Select(Mapper.Map<CollectionInfoDto>));
         }
 
         [HttpGet("{id}", Name = "GetCollectionById")]
@@ -50,6 +50,20 @@ namespace FlashcardsApi.Controllers
             try
             {
                 storage.AddCardToCollection(id, cardId);
+                return NoContent();
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost("{id}/remove")]
+        public ActionResult RemoveCardFromCollection(string id, [FromBody] string cardId)
+        {
+            try
+            {
+                storage.RemoveCardFromCollection(id, cardId);
                 return NoContent();
             }
             catch (InvalidOperationException)
