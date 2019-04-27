@@ -74,12 +74,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Questions\Question.cs" />
     <Compile Include="Exercise.cs" />
+    <Compile Include="Storage\DumbUserStorage.cs" />
     <Compile Include="Storage\IStorage.cs" />
+    <Compile Include="Storage\IUserStorage.cs" />
     <Compile Include="Storage\Mongo.cs" />
     <Compile Include="Storage\MongoCollection.cs" />
     <Compile Include="TestBuilder.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

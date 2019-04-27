@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlashcardsApi.Controllers
 {
