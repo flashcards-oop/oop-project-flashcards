@@ -1,7 +1,10 @@
-﻿namespace Flashcards
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace Flashcards
 {
     public class ChoiceAnswer : Answer
     {
+        [BsonElement]
         public string Answer { get; }
 
         public ChoiceAnswer(string answer)

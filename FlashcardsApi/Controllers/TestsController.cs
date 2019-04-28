@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Flashcards;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,12 @@ namespace FlashcardsApi.Controllers
     public class TestsController : Controller
     {
         private readonly IStorage storage;
+        private readonly IAnswersStorage answersStorage;
 
-        public TestsController(IStorage storage)
+        public TestsController(IStorage storage, IAnswersStorage answersStorage)
         {
             this.storage = storage;
+            this.answersStorage = answersStorage;
         }
 
         [HttpPost("generate")]
@@ -29,7 +32,10 @@ namespace FlashcardsApi.Controllers
             builder.GenerateTasks(test.ChoiceCnt, typeof(ChoiceQuestion));
             builder.GenerateTasks(test.MatchCnt, typeof(MatchingQuestion));
 
-            return Ok(builder.Build());
+            var exercises = builder.Build();
+            var testId = answersStorage.AddAnswers(exercises);
+
+            return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
         }
     }
 }
