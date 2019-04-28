@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Flashcards.Storage;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlashcardsApi
 {
@@ -43,8 +44,15 @@ namespace FlashcardsApi
                         };
                     });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ResourceAccess", policy => policy.Requirements.Add(new SameOwnerRequirement()));
+            });
+            services.AddSingleton<IAuthorizationHandler, OwnedResourcesAuthorizationHandler>();
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
+
             AutoMapper.Mapper.Initialize(config =>
                 config.CreateMap<Collection, CollectionDto>()
                     .ForMember(
@@ -52,8 +60,8 @@ namespace FlashcardsApi
                         opt => opt.MapFrom(coll => coll.Cards.Select(card => card.Id))
                     )
             );
-            services.AddSingleton<IStorage>(new Mongo());
-            services.AddSingleton<IUserStorage>(new DumbUserStorage());
+            services.AddSingleton<IStorage, Mongo>();
+            services.AddSingleton<IUserStorage, DumbUserStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
+using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace FlashcardsApi.Controllers
 {
@@ -10,34 +13,44 @@ namespace FlashcardsApi.Controllers
     public class CardsController : Controller
     {
         private readonly IStorage storage;
+        private readonly IAuthorizationService authorizationService;
 
-        public CardsController(IStorage storage)
+        public CardsController(IStorage storage, IAuthorizationService authorizationService)
         {
             this.storage = storage;
+            this.authorizationService = authorizationService;
         }
 
+        [Authorize]
         [HttpGet("all")]
         public ActionResult<IEnumerable<Card>> GetAll()
         {
-            return Ok(storage.GetAllCards());
+            return Ok(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name));
         }
 
+        [Authorize]
         [HttpGet("{id}", Name = "GetCardById")]
-        public ActionResult<Card> GetById([FromRoute] string id)
+        public async Task<ActionResult<Card>> GetById([FromRoute] string id)
         {
             var card = storage.FindCard(id);
             if (card == null)
                 return NotFound();
-            return Ok(card);
+            var authResult = await authorizationService.AuthorizeAsync(User, card, "ResourceAccess");
+
+            if (authResult.Succeeded)
+                return Ok(card);
+            return Forbid();
         }
 
+        [Authorize]
         [HttpPost("create")]
-        public ActionResult CreateCard([FromBody] Card card)
+        public ActionResult CreateCard([FromBody] CardDto cardDto) 
         {
-            storage.AddCard(card);
+            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name);
+            storage.AddCard(newCard);
 
             return CreatedAtRoute(
-                "GetCardById", new { id = card.Id }, card.Id);
+                "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
     }
 }

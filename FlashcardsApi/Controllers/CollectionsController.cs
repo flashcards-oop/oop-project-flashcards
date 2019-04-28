@@ -37,7 +37,7 @@ namespace FlashcardsApi.Controllers
         [HttpPost("create")]
         public ActionResult AddCollection([FromBody] string name)
         {
-            var newCollection = new Collection(name);
+            var newCollection = new Collection(name, User.Identity.Name);
             storage.AddCollection(newCollection);
 
             return CreatedAtRoute(

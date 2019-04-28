@@ -65,6 +65,7 @@
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Card.cs" />
     <Compile Include="Answers\ChoiceAnswer.cs" />
+    <Compile Include="IOwnedResource.cs" />
     <Compile Include="Questions\ChoiceQuestion.cs" />
     <Compile Include="Collection.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
