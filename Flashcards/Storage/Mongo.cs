@@ -83,7 +83,7 @@ namespace Flashcards
             {
                 return null;
             }
-            var collection = new Collection(mongoCollection.Name, mongoCollection.Id);
+            var collection = new Collection(mongoCollection.Name, mongoCollection.OwnerLogin, mongoCollection.Id);
             foreach (var cardId in mongoCollection.CardsId)
             {
                 collection.Cards.Add(FindCard(cardId));

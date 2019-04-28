@@ -12,7 +12,7 @@ namespace Flashcards
         [BsonIgnoreIfNull]
         public List<Card> Cards { get; }
         [BsonElement]
-        public string OwnerLogin { get; }
+        public string OwnerLogin { get; protected set; }
         
         [BsonConstructor]
         public Collection(string name, string ownerLogin, string id = null, List<Card> cards = null)
