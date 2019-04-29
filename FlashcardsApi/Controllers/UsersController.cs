@@ -23,6 +23,9 @@ namespace FlashcardsApi.Controllers
         [HttpPost("create")]
         public IActionResult CreateAccount([FromBody] string login)
         {
+            if (userStorage.FindUserByLogin(login) == null)
+                return Forbid();
+
             userStorage.AddUser(new User(login));
             return NoContent();
         }

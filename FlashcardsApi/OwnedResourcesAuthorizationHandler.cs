@@ -16,7 +16,4 @@ namespace FlashcardsApi
             return Task.CompletedTask;
         }
     }
-
-    public class SameOwnerRequirement : IAuthorizationRequirement
-    { }
 }
