@@ -11,14 +11,16 @@ namespace Flashcards
 
         public static MongoCollection FromCollection(Collection collection)
         {
-            return new MongoCollection(collection.Name, collection.Id, collection.Cards.Select(card => card.Id).ToList());
+            return new MongoCollection(collection.Name, collection.Id, 
+                collection.OwnerLogin, collection.Cards.Select(card => card.Id).ToList());
         }
 
-        [BsonConstructor("Name", "Id", "CardsId")]
-        private MongoCollection(string name, string id, List<string> cards)
+        [BsonConstructor("Name", "Id", "OwnerLogin", "CardsId")]
+        private MongoCollection(string name, string id, string ownerId, List<string> cards)
         {
             Name = name;
             Id = id;
+            OwnerLogin = ownerId;
             CardsId = cards;
         }
     }
