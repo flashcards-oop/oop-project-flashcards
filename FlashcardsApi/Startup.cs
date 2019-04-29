@@ -45,7 +45,7 @@ namespace FlashcardsApi
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ResourceAccess", policy => policy.Requirements.Add(new SameOwnerRequirement()));
+                options.AddPolicy(Policies.ResourceAccess, policy => policy.Requirements.Add(new SameOwnerRequirement()));
             });
             services.AddSingleton<IAuthorizationHandler, OwnedResourcesAuthorizationHandler>();
 

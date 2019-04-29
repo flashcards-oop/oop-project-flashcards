@@ -35,7 +35,7 @@ namespace FlashcardsApi.Controllers
             var card = storage.FindCard(id);
             if (card == null)
                 return NotFound();
-            var authResult = await authorizationService.AuthorizeAsync(User, card, "ResourceAccess");
+            var authResult = await authorizationService.AuthorizeAsync(User, card, Policies.ResourceAccess);
 
             if (authResult.Succeeded)
                 return Ok(card);

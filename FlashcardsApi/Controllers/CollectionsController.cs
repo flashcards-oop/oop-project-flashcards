@@ -115,7 +115,7 @@ namespace FlashcardsApi.Controllers
 
         private async Task<bool> IsUsersResource(ClaimsPrincipal user, IOwnedResource resource)
         {
-            var authResult = await authorizationService.AuthorizeAsync(user, resource, "ResourceAccess");
+            var authResult = await authorizationService.AuthorizeAsync(user, resource, Policies.ResourceAccess);
             return authResult.Succeeded;
         }
     }
