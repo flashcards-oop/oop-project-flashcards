@@ -14,7 +14,7 @@ namespace Flashcards
 
         public Mongo()
         {
-            var client = new MongoClient();
+            var client = new MongoClient("mongodb://localhost:27017");
             var database = client.GetDatabase("flashcards");
             cards = database.GetCollection<Card>("cards");
             collections = database.GetCollection<MongoCollection>("collections");
@@ -83,7 +83,7 @@ namespace Flashcards
             {
                 return null;
             }
-            var collection = new Collection(mongoCollection.Name, mongoCollection.Id);
+            var collection = new Collection(mongoCollection.Name, mongoCollection.OwnerLogin, mongoCollection.Id);
             foreach (var cardId in mongoCollection.CardsId)
             {
                 collection.Cards.Add(FindCard(cardId));
