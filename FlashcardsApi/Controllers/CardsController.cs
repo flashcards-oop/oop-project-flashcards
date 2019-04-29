@@ -52,5 +52,12 @@ namespace FlashcardsApi.Controllers
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
+
+        [HttpDelete("delete")]
+        public ActionResult DeleteCard([FromBody] string id)
+        {
+            storage.DeleteCard(id);
+            return Ok("Card deleted");
+        }
     }
 }

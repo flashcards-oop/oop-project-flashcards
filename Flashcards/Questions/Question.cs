@@ -1,7 +1,14 @@
+using System;
+
 namespace Flashcards
 {
     public abstract class Question
     {
-        public int Id { get; set; }
+        public string Id { get; }
+
+        public Question()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
     }
 }

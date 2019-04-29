@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +61,7 @@ namespace FlashcardsApi
                     )
             );
             services.AddSingleton<IStorage, Mongo>();
+	    services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
             services.AddSingleton<IUserStorage, DumbUserStorage>();
         }
 

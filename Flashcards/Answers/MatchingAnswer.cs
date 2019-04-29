@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Flashcards
 {
     public class MatchingAnswer : Answer
     {
+        [BsonElement]
         public readonly Dictionary<string, string> Matches;
 
         public MatchingAnswer(Dictionary<string, string> matches)

@@ -57,7 +57,14 @@ namespace FlashcardsApi.Controllers
                 "GetCollectionById", new { id = newCollection.Id }, newCollection.Id);
         }
 
-        [Authorize]
+        [HttpDelete("delete")]
+        public ActionResult DeleteCollection([FromBody] string id)
+        {
+            storage.DeleteCollection(id);
+            return Ok("Collection deleted");
+        }
+
+	[Authorize]
         [HttpPost("{id}/add")]
         public async Task<ActionResult> AddCardToCollection(string id, [FromBody] string cardId)
         {
