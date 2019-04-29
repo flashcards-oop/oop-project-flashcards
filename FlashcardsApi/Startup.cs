@@ -8,7 +8,6 @@ using FlashcardsApi.Models;
 using System.Linq;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Flashcards.Storage;
 using Microsoft.AspNetCore.Authorization;
 
 namespace FlashcardsApi

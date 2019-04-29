@@ -1,4 +1,4 @@
-﻿namespace Flashcards.Storage
+﻿namespace Flashcards
 {
     public interface IUserStorage
     {

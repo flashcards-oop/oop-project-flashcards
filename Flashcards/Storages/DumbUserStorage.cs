@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Flashcards.Storage
+namespace Flashcards
 {
     public class DumbUserStorage : IUserStorage
     {

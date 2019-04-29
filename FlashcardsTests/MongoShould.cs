@@ -25,7 +25,7 @@ namespace FlashcardsTests
         [Test]
         public void InsertCards()
         {
-            var card = new Card("Solomon is a", "human");
+            var card = new Card("Solomon is a", "human", "0");
             mongo.AddCard(card);
 
             var insertedCard = mongo.FindCard(card.Id);
@@ -37,7 +37,7 @@ namespace FlashcardsTests
         [Test]
         public void DeleteCard()
         {
-            var card = new Card("Solomon is a", "human");
+            var card = new Card("Solomon is a", "human", "0");
             mongo.AddCard(card);
             mongo.DeleteCard(card.Id);
             Assert.IsNull(mongo.FindCard(card.Id));
@@ -46,9 +46,9 @@ namespace FlashcardsTests
         [Test]
         public void ReturnListOfCards()
         {
-            var card1 = new Card("Solomon is a", "human");
-            var card2 = new Card("Programmer is", "human");
-            var card3 = new Card("Programmer is", "god");
+            var card1 = new Card("Solomon is a", "human", "0");
+            var card2 = new Card("Programmer is", "human", "0");
+            var card3 = new Card("Programmer is", "god", "0");
             
             mongo.AddCard(card1);
             mongo.AddCard(card2);
@@ -66,12 +66,12 @@ namespace FlashcardsTests
         [Test]
         public void InsertCollection()
         {
-            var collection = new Collection("Important terms", 
+            var collection = new Collection("Important terms", "0",
                 cards: new List<Card>
                 {
-                    new Card("Solomon is a", "human"),
-                    new Card("Programmer is", "human"),
-                    new Card("Programmer is", "god")
+                    new Card("Solomon is a", "human", "0"),
+                    new Card("Programmer is", "human", "0"),
+                    new Card("Programmer is", "god", "0")
                 });
             mongo.AddCollection(collection);
         }
@@ -79,12 +79,12 @@ namespace FlashcardsTests
         [Test]
         public void DeleteCollection()
         {
-            var collection = new Collection("Important terms", 
+            var collection = new Collection("Important terms", "0",
                 cards: new List<Card>
                 {
-                    new Card("Solomon is a", "human"),
-                    new Card("Programmer is", "human"),
-                    new Card("Programmer is", "god")
+                    new Card("Solomon is a", "human", "0"),
+                    new Card("Programmer is", "human", "0"),
+                    new Card("Programmer is", "god", "0")
                 });
             mongo.AddCollection(collection);
             mongo.DeleteCollection(collection.Id);
@@ -94,16 +94,16 @@ namespace FlashcardsTests
         [Test]
         public void AddCardToCollection()
         {
-            var collection = new Collection("Important terms", 
+            var collection = new Collection("Important terms", "0",
                 cards: new List<Card>
                 {
-                    new Card("Solomon is a", "human"),
-                    new Card("Programmer is", "human"),
-                    new Card("Programmer is", "god")
+                    new Card("Solomon is a", "human", "0"),
+                    new Card("Programmer is", "human", "0"),
+                    new Card("Programmer is", "god", "0")
                 });
             mongo.AddCollection(collection);
             
-            var card = new Card("Solomon is a", "god");
+            var card = new Card("Solomon is a", "god", "0");
             mongo.AddCard(card);
             
             mongo.AddCardToCollection(collection.Id, card.Id);
@@ -115,12 +115,12 @@ namespace FlashcardsTests
         [Test]
         public void RemoveCardFromCollection()
         {
-            var collection = new Collection("Important terms", 
+            var collection = new Collection("Important terms", "0",
                 cards: new List<Card>
                 {
-                    new Card("Solomon is a", "human"),
-                    new Card("Programmer is", "human"),
-                    new Card("Programmer is", "god")
+                    new Card("Solomon is a", "human", "0"),
+                    new Card("Programmer is", "human", "0"),
+                    new Card("Programmer is", "god", "0")
                 });
             mongo.AddCollection(collection);
             
