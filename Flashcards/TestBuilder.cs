@@ -49,6 +49,7 @@ namespace Flashcards
         private Exercise GenerateMatchingTasks()
         {
             var answer = new Dictionary<string, string>();
+            var id = GuidGenerator.GenerateGuid();
             var matchingCounter = 0;
             while (matchingCounter < matchingNumber)
             {
@@ -62,12 +63,13 @@ namespace Flashcards
             terms.Shuffle();
             var definitions = answer.Values.ToArray();
             definitions.Shuffle();
-            return new Exercise(new MatchingAnswer(answer), new MatchingQuestion(terms, definitions));
+            return new Exercise(new MatchingAnswer(answer, id), new MatchingQuestion(terms, definitions, id));
         }
 
         private Exercise GenerateChoicesTasks()
         {
             var index = Random.Next(cards.Count);
+            var id = GuidGenerator.GenerateGuid();
             var choices = new string[choicesNumber];
             var definition = cards[index].Definition;
             var answer = cards[index].Term;
@@ -81,13 +83,14 @@ namespace Flashcards
                 choices[i] = newChoice;
             }
             choices.Shuffle();
-            return new Exercise(new ChoiceAnswer(answer), new ChoiceQuestion(definition, choices));
+            return new Exercise(new ChoiceAnswer(answer, id), new ChoiceQuestion(definition, choices, id));
         }
 
         private Exercise GenerateSimpleTasks()
         {
             var index = Random.Next(cards.Count);
-            return new Exercise(new OpenAnswer(cards[index].Term), new OpenAnswerQuestion(cards[index].Definition));
+            var id = GuidGenerator.GenerateGuid();
+            return new Exercise(new OpenAnswer(cards[index].Term, id), new OpenAnswerQuestion(cards[index].Definition, id));
         }
     }
 }

@@ -4,6 +4,7 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace FlashcardsApi.Controllers
 {
@@ -44,7 +45,8 @@ namespace FlashcardsApi.Controllers
             var exercises = builder.Build();
             var testId = answersStorage.AddAnswers(exercises);
 
-            return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
+            return new JsonResult(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}}, 
+                new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
         }
     }
 }

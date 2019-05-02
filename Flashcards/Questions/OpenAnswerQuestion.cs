@@ -10,8 +10,9 @@ namespace Flashcards
     {
         public string Definition { get; }
 
-        public OpenAnswerQuestion(string definition)
+        public OpenAnswerQuestion(string definition, string id) : base(id)
         {
+            Id = id;
             Definition = definition;
         }
 
