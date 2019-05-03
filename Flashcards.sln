@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsTests", "Flashcar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApi", "FlashcardsApi\FlashcardsApi.csproj", "{E8F953B0-F4E3-4318-AE08-FE80C9A113C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsClient", "FlashcardsClient\FlashcardsClient.csproj", "{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsClient", "FlashcardsClient\FlashcardsClient.csproj", "{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsApiTests", "FlashcardsApiTests\FlashcardsApiTests.csproj", "{CE60C014-1FB4-4942-9D09-867A05BF4FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,18 @@ Global
 		{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}.Release|x64.Build.0 = Release|Any CPU
 		{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}.Release|x86.ActiveCfg = Release|Any CPU
 		{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}.Release|x86.Build.0 = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|x64.Build.0 = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Debug|x86.Build.0 = Debug|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|x64.ActiveCfg = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|x64.Build.0 = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE60C014-1FB4-4942-9D09-867A05BF4FE3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
