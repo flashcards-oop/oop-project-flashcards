@@ -1,13 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using Flashcards;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace FlashcardsApi.Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class TestsController : Controller
@@ -25,7 +25,7 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult> GenerateTest(TestDto test)
+        public async Task<ActionResult<Dictionary<string, object>>> GenerateTest(TestDto test)
         {
             var collection = storage.FindCollection(test.CollectionId);
             if (collection is null)
@@ -45,8 +45,20 @@ namespace FlashcardsApi.Controllers
             var exercises = builder.Build();
             var testId = answersStorage.AddAnswers(exercises);
 
-            return new JsonResult(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}}, 
-                new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Objects});
+            return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
+        }
+
+        [HttpPost("check")]
+        public ActionResult CheckAnswers(TestAnswersDto answers)
+        {
+            var correctAnswers = answersStorage.FindAnswers(answers.TestId);
+            var counter = 
+                (from answer in correctAnswers 
+                let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 
+                where answer.IsTheSameAs(userAnswer) 
+                select answer).Count();
+
+            return Ok($"You scored {counter}.");
         }
     }
 }

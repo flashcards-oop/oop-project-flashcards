@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace FlashcardsApi
 {
@@ -51,6 +52,7 @@ namespace FlashcardsApi
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
 
             AutoMapper.Mapper.Initialize(config =>
                 config.CreateMap<Collection, CollectionDto>()
@@ -60,7 +62,7 @@ namespace FlashcardsApi
                     )
             );
             services.AddSingleton<IStorage, Mongo>();
-	    services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
+	        services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
             services.AddSingleton<IUserStorage, DumbUserStorage>();
         }
 
