@@ -7,8 +7,10 @@ namespace Flashcards
         [BsonElement]
         public string Answer { get; }
 
-        public ChoiceAnswer(string answer)
+		[BsonConstructor]
+        public ChoiceAnswer(string answer, string id) : base(id)
         {
+            Id = id;
             Answer = answer;
         }
 

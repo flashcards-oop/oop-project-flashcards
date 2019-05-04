@@ -64,7 +64,7 @@ namespace FlashcardsApi.Controllers
             return Ok("Collection deleted");
         }
 
-	[Authorize]
+	    [Authorize]
         [HttpPost("{id}/add")]
         public async Task<ActionResult> AddCardToCollection(string id, [FromBody] string cardId)
         {

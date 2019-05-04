@@ -14,13 +14,13 @@ namespace FlashcardsTests
             {
                 {"Solomon is a", "human"},
                 {"Programmer is", "god"}
-            });
+            }, "1");
 
             var second = new MatchingAnswer(new Dictionary<string, string>
             {
                 {"Programmer is", "god"},
                 {"Solomon is a", "human"},
-            });
+            }, "1");
 
             Assert.IsTrue(first.IsTheSameAs(second));
         }
@@ -31,11 +31,11 @@ namespace FlashcardsTests
             var first = new MatchingAnswer(new Dictionary<string, string>
             {
                 {"Programmer is", "human"},
-            });
+            }, "1");
             var second = new MatchingAnswer(new Dictionary<string, string>
             {
                 {"Programmer is", "god"},
-            });
+            }, "1");
 
             Assert.IsFalse(first.IsTheSameAs(second));
         }
@@ -48,11 +48,11 @@ namespace FlashcardsTests
             {
                 {"Solomon is a", "human"},
                 {"Programmer is", "god"},
-            });
+            }, "1");
             var second = new MatchingAnswer(new Dictionary<string, string>
             {
                 {"Solomon is a", "human"},
-            });
+            }, "1");
 
             Assert.IsFalse(first.IsTheSameAs(second));
         }
