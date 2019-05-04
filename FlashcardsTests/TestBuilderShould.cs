@@ -17,7 +17,7 @@ namespace FlashcardsTests
         [Test]
         public void GenerateMatchingTest()
         {
-            var testBuilder = new TestBuilder(testCards);
+            var testBuilder = new ObsoleteTestBuilder(testCards);
             testBuilder.GenerateTasks(1, typeof(MatchingQuestion));
             var test = testBuilder.Build();
             var answer = new Dictionary<string, string>
@@ -36,7 +36,7 @@ namespace FlashcardsTests
         [Test]
         public void GenerateOpenAnswerTest()
         {
-            var testBuilder = new TestBuilder(testCards);
+            var testBuilder = new ObsoleteTestBuilder(testCards);
             testBuilder.GenerateTasks(3, typeof(OpenAnswerQuestion));
             var test = testBuilder.Build();
             
@@ -46,7 +46,7 @@ namespace FlashcardsTests
         [Test]
         public void GenerateChoiceTest()
         {
-            var testBuilder = new TestBuilder(testCards);
+            var testBuilder = new ObsoleteTestBuilder(testCards);
             testBuilder.GenerateTasks(3, typeof(ChoiceQuestion));
             var test = testBuilder.Build();
             
