@@ -1,6 +1,6 @@
 using System;
 
-namespace Flashcards
+namespace Flashcards.Infrastructure
 {
     public class GuidGenerator
     {

@@ -76,7 +76,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Questions\Question.cs" />
     <Compile Include="Exercise.cs" />
-    <Compile Include="Storages\DumbUserStorage.cs" />
     <Compile Include="Storages\IStorage.cs" />
     <Compile Include="Storages\IAnswersStorage.cs" />
     <Compile Include="Storages\IUserStorage.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="Storages\MongoAnswersStorage.cs" />
     <Compile Include="Storages\MongoStorage.cs" />
     <Compile Include="Storages\MongoCollection.cs" />
+    <Compile Include="Storages\MongoUserStorage.cs" />
     <Compile Include="TestBuilder.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />

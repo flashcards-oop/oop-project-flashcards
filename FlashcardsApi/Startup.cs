@@ -63,7 +63,7 @@ namespace FlashcardsApi
             );
             services.AddSingleton<IStorage, Mongo>();
 	        services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
-            services.AddSingleton<IUserStorage, DumbUserStorage>();
+            services.AddSingleton<IUserStorage, MongoUserStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
