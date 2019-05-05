@@ -37,12 +37,12 @@ namespace FlashcardsApi.Controllers
             if (!authResult.Succeeded)
                 return Forbid();
 
-            var builder = new TestBuilder(collection.Cards);
-            builder.GenerateTasks(test.OpenCnt, typeof(OpenAnswerQuestion));
-            builder.GenerateTasks(test.ChoiceCnt, typeof(ChoiceQuestion));
-            builder.GenerateTasks(test.MatchCnt, typeof(MatchingQuestion));
+            var exercises = new TestBuilder(collection.Cards, new RandomCardsSelector())
+                .WithGenerator(new OpenQuestionExerciseGenerator(), test.OpenCnt)
+                .WithGenerator(new MatchingQuestionExerciseGenerator(), test.MatchCnt)
+                .WithGenerator(new ChoiceQuestionExerciseGenerator(), test.ChoiceCnt)
+                .Build();
 
-            var exercises = builder.Build();
             var testId = answersStorage.AddAnswers(exercises);
 
             return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
