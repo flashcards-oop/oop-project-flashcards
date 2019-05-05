@@ -5,7 +5,7 @@ namespace Flashcards
 {
     public class RandomCardsSelector : ICardsSelector
     {
-        Random random = new Random();
+        private readonly Random random = new Random();
 
         public IEnumerable<List<Card>> GetCardBunches(List<Card> cards, IEnumerable<int> bunchSizes)
         {

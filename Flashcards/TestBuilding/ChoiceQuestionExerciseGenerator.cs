@@ -6,7 +6,7 @@ namespace Flashcards
 {
     public class ChoiceQuestionExerciseGenerator : IExerciseGenerator
     {
-        Random random;
+        private readonly Random random;
 
         public ChoiceQuestionExerciseGenerator(int amountOfChoices = 4)
         {
