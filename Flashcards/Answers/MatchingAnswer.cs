@@ -9,8 +9,10 @@ namespace Flashcards
         [BsonElement]
         public readonly Dictionary<string, string> Matches;
 
-        public MatchingAnswer(Dictionary<string, string> matches)
+		[BsonConstructor]
+        public MatchingAnswer(Dictionary<string, string> matches, string id) : base(id)
         {
+            Id = id;
             Matches = matches;
         }
 

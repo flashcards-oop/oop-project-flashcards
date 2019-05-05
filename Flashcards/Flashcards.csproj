@@ -68,6 +68,7 @@
     <Compile Include="TestBuilding\ChoiceQuestionExerciseGenerator.cs" />
     <Compile Include="TestBuilding\ICardsSelector.cs" />
     <Compile Include="TestBuilding\IExerciseGenerator.cs" />
+    <Compile Include="Infrastructure\GuidGenerator.cs" />
     <Compile Include="IOwnedResource.cs" />
     <Compile Include="TestBuilding\MatchingQuestionExerciseGenerator.cs" />
     <Compile Include="TestBuilding\TestBuilder.cs" />
@@ -82,7 +83,6 @@
     <Compile Include="Questions\Question.cs" />
     <Compile Include="Exercise.cs" />
     <Compile Include="TestBuilding\RandomCardsSelector.cs" />
-    <Compile Include="Storages\DumbUserStorage.cs" />
     <Compile Include="Storages\IStorage.cs" />
     <Compile Include="Storages\IAnswersStorage.cs" />
     <Compile Include="Storages\IUserStorage.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="Storages\MongoAnswersStorage.cs" />
     <Compile Include="Storages\MongoStorage.cs" />
     <Compile Include="Storages\MongoCollection.cs" />
+    <Compile Include="Storages\MongoUserStorage.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />
     <Compile Include="User.cs" />

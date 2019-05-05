@@ -5,8 +5,9 @@
         public string[] Terms { get; }
         public string[] Definitions { get; }
 
-        public MatchingQuestion(string[] terms, string[] definitions)
+        public MatchingQuestion(string[] terms, string[] definitions, string id) : base(id)
         {
+            Id = id;
             Terms = terms;
             Definitions = definitions;
         }

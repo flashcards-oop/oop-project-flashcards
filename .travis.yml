@@ -1,0 +1,11 @@
+language: csharp
+solution: Flashcards.sln
+dotnet: 2.1.502
+install: 
+  - nuget restore Flashcards.sln
+  - nuget install NUnit.Console -Version 3.9.0 -OutputDirectory testrunner
+script: 
+  - dotnet restore
+  - docker-compose up -d
+  - msbuild /p:Configuration=Release Flashcards.sln
+  - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./FlashcardsTests/bin/Release/FlashcardsTests.dll

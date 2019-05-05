@@ -5,8 +5,9 @@
         public string Definition { get; }
         public string[] Choices { get; }
 
-        public ChoiceQuestion(string definition, string[] choises)
+        public ChoiceQuestion(string definition, string[] choises, string id) : base(id)
         {
+            Id = id;
             Definition = definition;
             Choices = choises;
         }
