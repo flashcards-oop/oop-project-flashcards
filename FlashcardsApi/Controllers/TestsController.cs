@@ -39,6 +39,7 @@ namespace FlashcardsApi.Controllers
             var exercises = new TestBuilder(collection.Cards, new RandomCardsSelector())
                 .WithGenerator(new OpenQuestionExerciseGenerator(), test.OpenCnt)
                 .WithGenerator(new MatchingQuestionExerciseGenerator(), test.MatchCnt)
+                .WithGenerator(new ChoiceQuestionExerciseGenerator(), test.ChoiceCnt)
                 .Build();
 
             var testId = answersStorage.AddAnswers(exercises);

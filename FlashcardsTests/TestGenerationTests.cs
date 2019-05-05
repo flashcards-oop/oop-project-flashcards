@@ -39,14 +39,34 @@ namespace FlashcardsTests
             Assert.IsInstanceOf<MatchingAnswer>(exercise.Answer);
 
             var question = exercise.Question as MatchingQuestion;
-            Assert.Contains("t1", question.Terms);
-            Assert.Contains("t2", question.Terms);
-            Assert.Contains("d1", question.Definitions);
-            Assert.Contains("d2", question.Definitions);
+            Assert.That(question.Terms, Is.EquivalentTo(cards.Select(card => card.Term)));
+            Assert.That(question.Definitions, Is.EquivalentTo(cards.Select(card => card.Definition)));
+            //Assert.Contains("t1", question.Terms);
+            //Assert.Contains("t2", question.Terms);
+            //Assert.Contains("d1", question.Definitions);
+            //Assert.Contains("d2", question.Definitions);
 
             var answer = exercise.Answer as MatchingAnswer;
             Assert.That(answer.Matches["d1"] == "t1");
             Assert.That(answer.Matches["d2"] == "t2");
+        }
+
+        [Test]
+        public void ChoiceQuestionExerciseGenerator_ShouldGenerateValidExercise()
+        {
+            var generator = new ChoiceQuestionExerciseGenerator(2);
+            var exercise = generator.GenerateExerciseFrom(cards);
+
+            Assert.IsInstanceOf<ChoiceQuestion>(exercise.Question);
+            Assert.IsInstanceOf<ChoiceAnswer>(exercise.Answer);
+
+            var question = exercise.Question as ChoiceQuestion;
+            Assert.Contains(question.Definition, cards.Select(card => card.Definition).ToList());
+            Assert.That(question.Choices, Is.EquivalentTo(cards.Select(card => card.Term)));
+
+            var answer = exercise.Answer as ChoiceAnswer;
+            Assert.That(
+                cards.Where(card => card.Definition == question.Definition && card.Term == answer.Answer).Count() > 0);
         }
 
         [Test]
