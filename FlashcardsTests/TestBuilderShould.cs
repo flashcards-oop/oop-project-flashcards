@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Flashcards;
 using NUnit.Framework;
 
@@ -13,44 +14,35 @@ namespace FlashcardsTests
             new Card("666", "Moscow", "is the capital of Russian Federation"),
             new Card("13", "Mama", "Romama")
         };
-        /* does not work
-        [Test]
-        public void GenerateMatchingTest()
-        {
-            var testBuilder = new ObsoleteTestBuilder(testCards);
-            testBuilder.GenerateTasks(1, typeof(MatchingQuestion));
-            var test = testBuilder.Build();
-            var answer = new Dictionary<string, string>
-            {
-                ["London"] = "is the capital of Great Britain",
-                ["Moscow"] = "is the capital of Russian Federation",
-                ["Mama"] = "Romama"
-            };
-            
-            Assert.That(test.Count, Is.EqualTo(1));
-            var question = (MatchingQuestion) test[0].Question;
-            Assert.That(question.Terms, Is.EquivalentTo(answer.Keys));
-            Assert.That(question.Definitions, Is.EquivalentTo(answer.Values));
-        }
-        */
+        
         [Test]
         public void GenerateOpenAnswerTest()
         {
-            var testBuilder = new ObsoleteTestBuilder(testCards);
-            testBuilder.GenerateTasks(3, typeof(OpenAnswerQuestion));
-            var test = testBuilder.Build();
+            var test = new TestBuilder(testCards, new RandomCardsSelector())
+                .WithGenerator(new OpenQuestionExerciseGenerator(), 3)
+                .Build();
             
-            Assert.That(test.Count, Is.EqualTo(3));
+            Assert.That(test.Count(), Is.EqualTo(3));
         }
 
         [Test]
         public void GenerateChoiceTest()
         {
-            var testBuilder = new ObsoleteTestBuilder(testCards);
-            testBuilder.GenerateTasks(3, typeof(ChoiceQuestion));
-            var test = testBuilder.Build();
+            var test = new TestBuilder(testCards, new RandomCardsSelector())
+                .WithGenerator(new ChoiceQuestionExerciseGenerator(), 3)
+                .Build();
             
-            Assert.That(test.Count, Is.EqualTo(3));
+            Assert.That(test.Count(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void GenerateMatchingTest()
+        {
+            var test = new TestBuilder(testCards, new RandomCardsSelector())
+                .WithGenerator(new MatchingQuestionExerciseGenerator(), 3)
+                .Build();
+            
+            Assert.That(test.Count(), Is.EqualTo(3));
         }
     }
 }

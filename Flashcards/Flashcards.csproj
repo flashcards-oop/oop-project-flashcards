@@ -90,7 +90,6 @@
     <Compile Include="Storages\MongoAnswersStorage.cs" />
     <Compile Include="Storages\MongoStorage.cs" />
     <Compile Include="Storages\MongoCollection.cs" />
-    <Compile Include="TestBuilding\ObsoleteTestBuilder.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />
     <Compile Include="User.cs" />
