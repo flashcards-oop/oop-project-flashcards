@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flashcards.Infrastructure;
 
 namespace Flashcards
 {
@@ -25,9 +26,11 @@ namespace Flashcards
             var choices = cards.Select(card => card.Term).ToList();
             choices.Shuffle();
 
+            var exerciseId = GuidGenerator.GenerateGuid();
+
             return new Exercise(
-                new ChoiceAnswer(targetCard.Term),
-                new ChoiceQuestion(targetCard.Definition, choices.ToArray()));
+                new ChoiceAnswer(targetCard.Term, exerciseId),
+                new ChoiceQuestion(targetCard.Definition, choices.ToArray(), exerciseId));
         }
     }
 }

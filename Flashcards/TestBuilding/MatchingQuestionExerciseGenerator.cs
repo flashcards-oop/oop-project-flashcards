@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flashcards.Infrastructure;
 
 namespace Flashcards
 {
@@ -26,10 +27,12 @@ namespace Flashcards
             var matches = new Dictionary<string, string>();
             foreach(var card in cards)
                 matches[card.Definition] = card.Term;
+            
+            var exerciseId = GuidGenerator.GenerateGuid();
 
             return new Exercise( 
-                new MatchingAnswer(matches),
-                new MatchingQuestion(terms.ToArray(), definitions.ToArray()));
+                new MatchingAnswer(matches, exerciseId),
+                new MatchingQuestion(terms.ToArray(), definitions.ToArray(), exerciseId));
         }
     }
 }
