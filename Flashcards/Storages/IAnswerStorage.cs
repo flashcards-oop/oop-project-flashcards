@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Flashcards
 {
     public interface IAnswersStorage
     {
-        string AddAnswers(IEnumerable<Exercise> exercises);
-        IEnumerable<Answer> FindAnswers(string testId);
-        void DeleteTest(string testId);
+        Task<string> AddAnswers(IEnumerable<Exercise> exercises);
+        Task<IEnumerable<Answer>> FindAnswers(string testId);
+        Task DeleteTest(string testId);
     }
 }

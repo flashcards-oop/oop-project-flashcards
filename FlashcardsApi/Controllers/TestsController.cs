@@ -51,9 +51,9 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpPost("check")]
-        public ActionResult CheckAnswers(TestAnswersDto answers)
+        public async Task<ActionResult> CheckAnswers(TestAnswersDto answers)
         {
-            var correctAnswers = answersStorage.FindAnswers(answers.TestId);
+            var correctAnswers = await answersStorage.FindAnswers(answers.TestId);
             var counter = 
                 (from answer in correctAnswers 
                 let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 
