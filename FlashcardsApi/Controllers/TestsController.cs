@@ -37,7 +37,9 @@ namespace FlashcardsApi.Controllers
             if (!authResult.Succeeded)
                 return Forbid();
 
-            var exercises = new TestBuilder(collection.Cards, new RandomCardsSelector())
+            var cards = await storage.GetCollectionCards(test.CollectionId);
+
+            var exercises = new TestBuilder(cards, new RandomCardsSelector())
                 .WithGenerator(new OpenQuestionExerciseGenerator(), test.OpenCnt)
                 .WithGenerator(new MatchingQuestionExerciseGenerator(), test.MatchCnt)
                 .WithGenerator(new ChoiceQuestionExerciseGenerator(), test.ChoiceCnt)

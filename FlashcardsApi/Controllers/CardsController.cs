@@ -23,16 +23,16 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("all")]
-        public ActionResult<IEnumerable<Card>> GetAll()
+        public async Task<ActionResult<IEnumerable<Card>>> GetAll()
         {
-            return Ok(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name));
+            return Ok(await Task.FromResult(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name)));
         }
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCardById")]
         public async Task<ActionResult<Card>> GetById([FromRoute] string id)
         {
-            var card = storage.FindCard(id);
+            var card = await storage.FindCard(id);
             if (card == null)
                 return NotFound();
             var authResult = await authorizationService.AuthorizeAsync(User, card, Policies.ResourceAccess);
@@ -46,9 +46,8 @@ namespace FlashcardsApi.Controllers
         [HttpPost("create")]
         public ActionResult CreateCard([FromBody] CardDto cardDto) 
         {
-            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name);
+            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name, cardDto.CollectionId);
             storage.AddCard(newCard);
-
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
