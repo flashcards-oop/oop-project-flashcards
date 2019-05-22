@@ -27,7 +27,7 @@ namespace FlashcardsApi.Controllers
         [HttpPost("generate")]
         public async Task<ActionResult<Dictionary<string, object>>> GenerateTest(TestDto test)
         {
-            var collection = storage.FindCollection(test.CollectionId);
+            var collection = await storage.FindCollection(test.CollectionId);
             if (collection is null)
             {
                 return NotFound();

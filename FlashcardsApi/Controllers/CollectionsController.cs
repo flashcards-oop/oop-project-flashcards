@@ -31,10 +31,10 @@ namespace FlashcardsApi.Controllers
         
         [Authorize]
         [HttpPost("create")]
-        public ActionResult AddCollection([FromBody] string name)
+        public async Task<ActionResult> AddCollection([FromBody] string name)
         {
             var newCollection = new Collection(name, User.Identity.Name);
-            storage.AddCollection(newCollection);
+            await storage.AddCollection(newCollection);
 
             return CreatedAtRoute(
                 "GetCollectionById", new { id = newCollection.Id }, newCollection.Id);
@@ -69,9 +69,9 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpDelete("delete")]
-        public ActionResult DeleteCollection([FromBody] string id)
+        public async Task<ActionResult> DeleteCollection([FromBody] string id)
         {
-            storage.DeleteCollection(id);
+            await storage.DeleteCollection(id);
             return Ok("Collection deleted");
         }
 

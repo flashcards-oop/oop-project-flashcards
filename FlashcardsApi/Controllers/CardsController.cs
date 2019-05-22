@@ -44,18 +44,18 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("create")]
-        public ActionResult CreateCard([FromBody] CardDto cardDto) 
+        public async Task<ActionResult> CreateCard([FromBody] CardDto cardDto) 
         {
             var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name, cardDto.CollectionId);
-            storage.AddCard(newCard);
+            await storage.AddCard(newCard);
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
 
         [HttpDelete("delete")]
-        public ActionResult DeleteCard([FromBody] string id)
+        public async Task<ActionResult> DeleteCard([FromBody] string id)
         {
-            storage.DeleteCard(id);
+            await storage.DeleteCard(id);
             return Ok("Card deleted");
         }
     }

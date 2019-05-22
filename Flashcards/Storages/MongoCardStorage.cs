@@ -18,7 +18,7 @@ namespace Flashcards
             collections = database.GetCollection<Collection>("collections");
         }
         
-        public async void AddCard(Card card)
+        public async Task AddCard(Card card)
         {
             await cards.InsertOneAsync(card);
         }
@@ -33,12 +33,12 @@ namespace Flashcards
             return cards.AsQueryable();
         }
 
-        public async void DeleteCard(string id)
+        public async Task DeleteCard(string id)
         {
             await cards.FindOneAndDeleteAsync(c => c.Id == id);
         }
 
-        public async void AddCollection(Collection collection)
+        public async Task AddCollection(Collection collection)
         {
             await collections.InsertOneAsync(collection);
         }
@@ -53,7 +53,7 @@ namespace Flashcards
             return collections.AsQueryable();
         }
         
-        public async void DeleteCollection(string id)
+        public async Task DeleteCollection(string id)
         {
             await collections.FindOneAndDeleteAsync(c => c.Id == id);
         }
