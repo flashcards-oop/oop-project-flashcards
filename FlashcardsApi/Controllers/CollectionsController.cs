@@ -55,7 +55,7 @@ namespace FlashcardsApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}", Name = "GetCollectionCards")]
+        [HttpGet("{id}/cards", Name = "GetCollectionCards")]
         public async Task<ActionResult> GetCollectionCards(string id)
         {
             var collection = await storage.FindCollection(id);
