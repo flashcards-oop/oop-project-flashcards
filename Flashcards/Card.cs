@@ -7,6 +7,8 @@ namespace Flashcards
     {
         public string Id { get; }
         [BsonElement]
+        public string CollectionId { get; }
+        [BsonElement]
         public string Term { get; }
         [BsonElement]
         public string Definition { get; }
@@ -14,9 +16,10 @@ namespace Flashcards
         public string OwnerLogin { get; }
 
         [BsonConstructor]
-        public Card(string term, string definition, string ownerLogin, string id = null)
+        public Card(string term, string definition, string ownerLogin, string collectionId, string id = null)
         {
             Id = id ?? Guid.NewGuid().ToString();
+            CollectionId = collectionId;
             Term = term;
             Definition = definition;
             OwnerLogin = ownerLogin;

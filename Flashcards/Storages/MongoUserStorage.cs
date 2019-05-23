@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Flashcards
@@ -12,19 +13,19 @@ namespace Flashcards
             var database = client.GetDatabase("flashcards");
             users = database.GetCollection<User>("users");
         }
-        public void AddUser(User user)
+        public async Task AddUser(User user)
         {
-            users.InsertOne(user);
+            await users.InsertOneAsync(user);
         }
 
-        public User FindUserById(string id)
+        public async Task<User> FindUserById(string id)
         {
-            return users.Find(u => u.Id == id).FirstOrDefault();
+            return await users.Find(u => u.Id == id).FirstOrDefaultAsync();
         }
 
-        public User FindUserByLogin(string login)
+        public async Task<User> FindUserByLogin(string login)
         {
-            return users.Find(u => u.Login == login).FirstOrDefault();
+            return await users.Find(u => u.Login == login).FirstOrDefaultAsync();
         }
     }
 }

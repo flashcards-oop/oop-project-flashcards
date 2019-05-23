@@ -23,16 +23,16 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("all")]
-        public ActionResult<IEnumerable<Card>> GetAll()
+        public async Task<ActionResult<IEnumerable<Card>>> GetAll()
         {
-            return Ok(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name));
+            return Ok(await Task.FromResult(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name)));
         }
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCardById")]
         public async Task<ActionResult<Card>> GetById([FromRoute] string id)
         {
-            var card = storage.FindCard(id);
+            var card = await storage.FindCard(id);
             if (card == null)
                 return NotFound();
             var authResult = await authorizationService.AuthorizeAsync(User, card, Policies.ResourceAccess);
@@ -44,19 +44,18 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("create")]
-        public ActionResult CreateCard([FromBody] CardDto cardDto) 
+        public async Task<ActionResult> CreateCard([FromBody] CardDto cardDto) 
         {
-            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name);
-            storage.AddCard(newCard);
-
+            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name, cardDto.CollectionId);
+            await storage.AddCard(newCard);
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
 
         [HttpDelete("delete")]
-        public ActionResult DeleteCard([FromBody] string id)
+        public async Task<ActionResult> DeleteCard([FromBody] string id)
         {
-            storage.DeleteCard(id);
+            await storage.DeleteCard(id);
             return Ok("Card deleted");
         }
     }

@@ -53,14 +53,7 @@ namespace FlashcardsApi
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
-
-            AutoMapper.Mapper.Initialize(config =>
-                config.CreateMap<Collection, CollectionDto>()
-                    .ForMember(
-                        dto => dto.CardIds, 
-                        opt => opt.MapFrom(coll => coll.Cards.Select(card => card.Id))
-                    )
-            );
+            
             services.AddSingleton<IStorage, Mongo>();
 	        services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
             services.AddSingleton<IUserStorage, MongoUserStorage>();

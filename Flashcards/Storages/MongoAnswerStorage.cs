@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Flashcards
@@ -15,21 +16,21 @@ namespace Flashcards
             client.StartSession();
         }
         
-        public string AddAnswers(IEnumerable<Exercise> exercises)
+        public async Task<string> AddAnswers(IEnumerable<Exercise> exercises)
         {
             var answersList = new MongoAnswers(exercises);
-            answers.InsertOne(answersList);
+            await answers.InsertOneAsync(answersList);
             return answersList.Id;
         }
 
-        public IEnumerable<Answer> FindAnswers(string testId)
+        public async Task<IEnumerable<Answer>> FindAnswers(string testId)
         {
-            return answers.Find(a => a.Id == testId).FirstOrDefault().Answers;
+            return (await answers.Find(a => a.Id == testId).FirstOrDefaultAsync()).Answers;
         }
 
-        public void DeleteTest(string testId)
+        public async Task DeleteTest(string testId)
         {
-            answers.FindOneAndDelete(a => a.Id == testId);
+            await answers.FindOneAndDeleteAsync(a => a.Id == testId);
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace Flashcards
+﻿using System.Threading.Tasks;
+
+namespace Flashcards
 {
     public interface IUserStorage
     {
-        void AddUser(User user);
-        User FindUserById(string id);
-        User FindUserByLogin(string login);
+        Task AddUser(User user);
+        Task<User> FindUserById(string id);
+        Task<User> FindUserByLogin(string login);
     }
 }

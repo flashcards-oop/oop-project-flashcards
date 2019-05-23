@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Flashcards;
 using NUnit.Framework;
 
@@ -17,132 +17,113 @@ namespace FlashcardsTests
         }
 
         [TearDown]
-        public void Clear()
+        public async Task Clear()
         {
-            mongo.Clear();
+            await mongo.Clear();
         }
         
         [Test]
-        public void InsertCards()
+        public async Task InsertCards()
         {
-            var card = new Card("Solomon is a", "human", "0");
-            mongo.AddCard(card);
+            var card = new Card("Solomon is a", "human", "0", "a");
+            await mongo.AddCard(card);
 
-            var insertedCard = mongo.FindCard(card.Id);
+            var insertedCard = await mongo.FindCard(card.Id);
             Assert.That(card.Id, Is.EqualTo(insertedCard.Id));
             Assert.That(card.Term, Is.EqualTo(insertedCard.Term));
             Assert.That(card.Definition, Is.EqualTo(insertedCard.Definition));
+            Assert.That(card.CollectionId, Is.EqualTo(insertedCard.CollectionId));
         }
         
         [Test]
-        public void DeleteCard()
+        public async Task DeleteCard()
         {
-            var card = new Card("Solomon is a", "human", "0");
-            mongo.AddCard(card);
-            mongo.DeleteCard(card.Id);
-            Assert.IsNull(mongo.FindCard(card.Id));
+            var card = new Card("Solomon is a", "human", "0", "a");
+            await mongo.AddCard(card);
+            await mongo.DeleteCard(card.Id);
+            Assert.IsNull(await mongo.FindCard(card.Id));
         }
 
         [Test]
-        public void ReturnListOfCards()
+        public async Task ReturnListOfCards()
         {
-            var card1 = new Card("Solomon is a", "human", "0");
-            var card2 = new Card("Programmer is", "human", "0");
-            var card3 = new Card("Programmer is", "god", "0");
+            var card1 = new Card("Solomon is a", "human", "0", "a");
+            var card2 = new Card("Programmer is", "human", "0", "a");
+            var card3 = new Card("Programmer is", "god", "0", "a");
             
-            mongo.AddCard(card1);
-            mongo.AddCard(card2);
-            mongo.AddCard(card3);
+            await mongo.AddCard(card1);
+            await mongo.AddCard(card2);
+            await mongo.AddCard(card3);
 
-            var allCards = mongo.GetAllCards();
-            Assert.That(allCards.AsEnumerable().Count(), Is.EqualTo(3));
+            var allCards = await Task.FromResult(mongo.GetAllCards());
+            Assert.That(allCards.Count(), Is.EqualTo(3));
 
-            foreach (var card in mongo.GetAllCards())
+            foreach (var card in allCards)
             {
                 Assert.True(card.Id.Equals(card1.Id) || card.Id.Equals(card2.Id) || card.Id.Equals(card3.Id));
             }
         }
 
         [Test]
-        public void InsertCollection()
+        public async Task InsertCollection()
         {
-            var collection = new Collection("Important terms", "0",
-                cards: new List<Card>
-                {
-                    new Card("Solomon is a", "human", "0"),
-                    new Card("Programmer is", "human", "0"),
-                    new Card("Programmer is", "god", "0")
-                });
-            mongo.AddCollection(collection);
+            var collection = new Collection("Important terms", "0");
+            await mongo.AddCollection(collection);
         }
 
         [Test]
-        public void DeleteCollection()
+        public async Task DeleteCollection()
         {
-            var collection = new Collection("Important terms", "0",
-                cards: new List<Card>
-                {
-                    new Card("Solomon is a", "human", "0"),
-                    new Card("Programmer is", "human", "0"),
-                    new Card("Programmer is", "god", "0")
-                });
-            mongo.AddCollection(collection);
-            mongo.DeleteCollection(collection.Id);
-            Assert.IsNull(mongo.FindCollection(collection.Id));
+            var collection = new Collection("Important terms", "0");
+            await mongo.AddCollection(collection);
+            await mongo.DeleteCollection(collection.Id);
+            Assert.IsNull(await mongo.FindCollection(collection.Id));
         }
 
         [Test]
-        public void AddCardToCollection()
+        public async Task AddCardToCollection()
         {
-            var collection = new Collection("Important terms", "0",
-                cards: new List<Card>
-                {
-                    new Card("Solomon is a", "human", "0"),
-                    new Card("Programmer is", "human", "0"),
-                    new Card("Programmer is", "god", "0")
-                });
-            mongo.AddCollection(collection);
-            
-            var card = new Card("Solomon is a", "god", "0");
-            mongo.AddCard(card);
-            
-            mongo.AddCardToCollection(collection.Id, card.Id);
-            var updatedCollection = mongo.FindCollection(collection.Id);
-            Assert.That(updatedCollection.Cards.Count, Is.EqualTo(4));
-            Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.Member(card.Id));
+            var collection = new Collection("Important terms", "0");
+            await mongo.AddCollection(collection);
+
+
+            await mongo.AddCard(new Card("Solomon is a", "human", "0", collection.Id));
+            await mongo.AddCard(new Card("Programmer is", "human", "0", collection.Id));
+            await mongo.AddCard(new Card("Programmer is", "god", "0", collection.Id));
+
+            Assert.NotNull(await mongo.FindCollection(collection.Id));
+            var collectionCards = await mongo.GetCollectionCards(collection.Id);
+            Assert.That(collectionCards.Count, Is.EqualTo(3));
         }
 
         [Test]
-        public void RemoveCardFromCollection()
+        public async Task RemoveCardFromCollection()
         {
-            var collection = new Collection("Important terms", "0",
-                cards: new List<Card>
-                {
-                    new Card("Solomon is a", "human", "0"),
-                    new Card("Programmer is", "human", "0"),
-                    new Card("Programmer is", "god", "0")
-                });
-            mongo.AddCollection(collection);
+            var collection = new Collection("Important terms", "0");
+            await mongo.AddCollection(collection);
+
+            var card = new Card("Solomon is a", "human", "0", collection.Id);
+            await mongo.AddCard(card);
+            await mongo.AddCard(new Card("Programmer is", "human", "0", collection.Id));
+            await mongo.AddCard(new Card("Programmer is", "god", "0", collection.Id));
             
-            mongo.RemoveCardFromCollection(collection.Id, collection.Cards[0].Id);
-            var updatedCollection = mongo.FindCollection(collection.Id);
-            Assert.That(updatedCollection.Cards.Count, Is.EqualTo(2));
-            Assert.That(updatedCollection.Cards.Select(c => c.Id), Has.No.Member(collection.Cards[0].Id));
+            await mongo.DeleteCard(card.Id);
+            Assert.That((await mongo.GetCollectionCards(collection.Id)).Count, Is.EqualTo(2));
         }
     }
 
     public static class MongoExtensions
     {
-        public static void Clear(this Mongo mongo)
+        public static async Task Clear(this Mongo mongo)
         {
             foreach (var card in mongo.GetAllCards())
             {
-                mongo.DeleteCard(card.Id);
+                await mongo.DeleteCard(card.Id);
             }
             
             foreach (var collection in mongo.GetAllCollections())
             {
-                mongo.DeleteCollection(collection.Id);
+                await mongo.DeleteCollection(collection.Id);
             }
         }
     }

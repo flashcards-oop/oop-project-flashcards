@@ -27,7 +27,7 @@ namespace FlashcardsApi.Controllers
         [HttpPost("generate")]
         public async Task<ActionResult<Dictionary<string, object>>> GenerateTest(TestDto test)
         {
-            var collection = storage.FindCollection(test.CollectionId);
+            var collection = await storage.FindCollection(test.CollectionId);
             if (collection is null)
             {
                 return NotFound();
@@ -37,7 +37,9 @@ namespace FlashcardsApi.Controllers
             if (!authResult.Succeeded)
                 return Forbid();
 
-            var exercises = new TestBuilder(collection.Cards, new RandomCardsSelector())
+            var cards = await storage.GetCollectionCards(test.CollectionId);
+
+            var exercises = new TestBuilder(cards, new RandomCardsSelector())
                 .WithGenerator(new OpenQuestionExerciseGenerator(), test.OpenCnt)
                 .WithGenerator(new MatchingQuestionExerciseGenerator(), test.MatchCnt)
                 .WithGenerator(new ChoiceQuestionExerciseGenerator(), test.ChoiceCnt)
@@ -49,9 +51,9 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpPost("check")]
-        public ActionResult CheckAnswers(TestAnswersDto answers)
+        public async Task<ActionResult> CheckAnswers(TestAnswersDto answers)
         {
-            var correctAnswers = answersStorage.FindAnswers(answers.TestId);
+            var correctAnswers = await answersStorage.FindAnswers(answers.TestId);
             var counter = 
                 (from answer in correctAnswers 
                 let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 

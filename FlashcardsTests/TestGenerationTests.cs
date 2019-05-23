@@ -11,15 +11,15 @@ namespace FlashcardsTests
     {
         List<Card> cards = new List<Card>
             {
-                new Card("t1", "d1", "0"),
-                new Card("t2", "d2", "0")
+                new Card("t1", "d1", "0", "a"),
+                new Card("t2", "d2", "0", "a")
             };
         
         private readonly List<Card> testCards = new List<Card>
         {
-            new Card("1", "London", "is the capital of Great Britain"),
-            new Card("666", "Moscow", "is the capital of Russian Federation"),
-            new Card("13", "Mama", "Romama")
+            new Card("1", "London", "is the capital of Great Britain", "a"),
+            new Card("666", "Moscow", "is the capital of Russian Federation", "a"),
+            new Card("13", "Mama", "Romama", "a")
         };
         
         [Test]
@@ -56,7 +56,7 @@ namespace FlashcardsTests
         public void OpenQuestionExerciseGenerator_ShouldGenerateValidExercise()
         {
             var generator = new OpenQuestionExerciseGenerator();
-            var card = new Card("term", "definition", "0");
+            var card = new Card("term", "definition", "0", "a");
             var exercise = generator.GenerateExerciseFrom(new List<Card> { card });
 
             Assert.IsInstanceOf<OpenAnswer>(exercise.Answer);
@@ -102,7 +102,7 @@ namespace FlashcardsTests
 
             var answer = exercise.Answer as ChoiceAnswer;
             Assert.That(
-                cards.Where(card => card.Definition == question.Definition && card.Term == answer.Answer).Count() > 0);
+                cards.Any(card => card.Definition == question.Definition && card.Term == answer.Answer));
         }
 
         [Test]
@@ -116,8 +116,8 @@ namespace FlashcardsTests
                 .WithGenerator(new MatchingQuestionExerciseGenerator(2), matchingCnt)
                 .Build();
 
-            Assert.AreEqual(openCnt, exercises.Where(ex => ex.Question is OpenAnswerQuestion).Count());
-            Assert.AreEqual(matchingCnt, exercises.Where(ex => ex.Question is MatchingQuestion).Count());
+            Assert.AreEqual(openCnt, exercises.Count(ex => ex.Question is OpenAnswerQuestion));
+            Assert.AreEqual(matchingCnt, exercises.Count(ex => ex.Question is MatchingQuestion));
         }
     }
 }

@@ -83,13 +83,12 @@
     <Compile Include="Questions\Question.cs" />
     <Compile Include="Exercise.cs" />
     <Compile Include="TestBuilding\RandomCardsSelector.cs" />
-    <Compile Include="Storages\IStorage.cs" />
-    <Compile Include="Storages\IAnswersStorage.cs" />
+    <Compile Include="Storages\ICardStorage.cs" />
+    <Compile Include="Storages\IAnswerStorage.cs" />
     <Compile Include="Storages\IUserStorage.cs" />
     <Compile Include="Storages\MongoAnswers.cs" />
-    <Compile Include="Storages\MongoAnswersStorage.cs" />
-    <Compile Include="Storages\MongoStorage.cs" />
-    <Compile Include="Storages\MongoCollection.cs" />
+    <Compile Include="Storages\MongoAnswerStorage.cs" />
+    <Compile Include="Storages\MongoCardStorage.cs" />
     <Compile Include="Storages\MongoUserStorage.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />
