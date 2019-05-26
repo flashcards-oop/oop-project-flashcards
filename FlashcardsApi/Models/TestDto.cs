@@ -1,18 +1,28 @@
+using System.Collections.Generic;
+
 namespace FlashcardsApi.Models
 {
+    public class TestBlockDto
+    {
+        public string Type { get; }
+        public int Amount { get; }
+
+        public TestBlockDto(string type, int amount)
+        {
+            Type = type;
+            Amount = amount;
+        }
+    }
+
     public class TestDto
     {
         public string CollectionId { get; }
-        public int OpenCnt { get; }
-        public int ChoiceCnt { get; }
-        public int MatchCnt { get; }
+        public List<TestBlockDto> blocks;
         
-        public TestDto(string collectionId, int openCnt, int choiceCnt, int matchCnt)
+        public TestDto(string collectionId, List<TestBlockDto> blocks)
         {
             CollectionId = collectionId;
-            OpenCnt = openCnt;
-            ChoiceCnt = choiceCnt;
-            MatchCnt = matchCnt;
+            this.blocks = blocks;
         }
     }
 }

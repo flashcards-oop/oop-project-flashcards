@@ -15,12 +15,20 @@ namespace FlashcardsApi.Controllers
         private readonly IStorage storage;
         private readonly IAnswersStorage answersStorage;
         private readonly IAuthorizationService authorizationService;
+        private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
 
-        public TestsController(IStorage storage, IAnswersStorage answersStorage, IAuthorizationService authorizationService)
+        public TestsController(IStorage storage, 
+            IAnswersStorage answersStorage,
+            IEnumerable<IExerciseGenerator> generators,
+            IAuthorizationService authorizationService)
         {
             this.storage = storage;
             this.answersStorage = answersStorage;
             this.authorizationService = authorizationService;
+
+            generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
+            foreach (var generator in generators)
+                generatorsByCaption[generator.GetTypeCaption()] = generator;
         }
 
         [Authorize]
@@ -39,13 +47,13 @@ namespace FlashcardsApi.Controllers
 
             var cards = await storage.GetCollectionCards(test.CollectionId);
 
-            var exercises = new TestBuilder(cards, new RandomCardsSelector())
-                .WithGenerator(new OpenQuestionExerciseGenerator(), test.OpenCnt)
-                .WithGenerator(new MatchingQuestionExerciseGenerator(), test.MatchCnt)
-                .WithGenerator(new ChoiceQuestionExerciseGenerator(), test.ChoiceCnt)
-                .Build();
+            var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
+            foreach(var block in test.blocks)
+                if (generatorsByCaption.ContainsKey(block.Type))
+                    testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
-            var testId = answersStorage.AddAnswers(exercises);
+            var exercises = testBuilder.Build().ToList();
+            var testId = await answersStorage.AddAnswers(exercises);
 
             return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
         }

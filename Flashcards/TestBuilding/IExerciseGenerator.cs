@@ -6,5 +6,6 @@ namespace Flashcards
     {
         Exercise GenerateExerciseFrom(IList<Card> cards);
         int RequiredAmountOfCards { get; }
+        string GetTypeCaption();
     }
 }
