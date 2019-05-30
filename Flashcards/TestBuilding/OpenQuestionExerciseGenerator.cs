@@ -9,6 +9,11 @@ namespace Flashcards
     {
         public int RequiredAmountOfCards => 1;
 
+        public string GetTypeCaption()
+        {
+            return "open";
+        }
+
         public Exercise GenerateExerciseFrom(IList<Card> cards)
         {
             if (cards.Count != RequiredAmountOfCards)
