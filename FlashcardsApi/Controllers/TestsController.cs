@@ -14,17 +14,14 @@ namespace FlashcardsApi.Controllers
     {
         private readonly IStorage storage;
         private readonly IAnswersStorage answersStorage;
-        private readonly IAuthorizationService authorizationService;
         private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
 
         public TestsController(IStorage storage, 
             IAnswersStorage answersStorage,
-            IEnumerable<IExerciseGenerator> generators,
-            IAuthorizationService authorizationService)
+            IEnumerable<IExerciseGenerator> generators)
         {
             this.storage = storage;
             this.answersStorage = answersStorage;
-            this.authorizationService = authorizationService;
 
             generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
             foreach (var generator in generators)
@@ -41,8 +38,7 @@ namespace FlashcardsApi.Controllers
                 return NotFound();
             }
 
-            var authResult = await authorizationService.AuthorizeAsync(User, collection, Policies.ResourceAccess);
-            if (!authResult.Succeeded)
+            if (!User.OwnsResource(collection))
                 return Forbid();
 
             var cards = await storage.GetCollectionCards(test.CollectionId);

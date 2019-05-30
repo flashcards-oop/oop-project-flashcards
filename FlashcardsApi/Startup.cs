@@ -43,12 +43,13 @@ namespace FlashcardsApi
                             ValidateIssuerSigningKey = true,
                         };
                     });
-
+            /*
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.ResourceAccess, policy => policy.Requirements.Add(new SameOwnerRequirement()));
             });
             services.AddSingleton<IAuthorizationHandler, OwnedResourcesAuthorizationHandler>();
+            */
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);

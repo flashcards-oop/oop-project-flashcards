@@ -28,9 +28,9 @@ namespace Flashcards
             return await cards.Find(c => c.Id == id).FirstOrDefaultAsync();
         }
         
-        public IEnumerable<Card> GetAllCards()
+        public async Task<IEnumerable<Card>> GetAllCards()
         {
-            return cards.AsQueryable();
+            return await Task.FromResult(cards.AsQueryable());
         }
 
         public async Task DeleteCard(string id)
@@ -48,9 +48,9 @@ namespace Flashcards
             return await collections.Find(c => c.Id == id).FirstOrDefaultAsync();
         }
 
-        public IEnumerable<Collection> GetAllCollections()
+        public async Task<IEnumerable<Collection>> GetAllCollections()
         {
-            return collections.AsQueryable();
+            return await Task.FromResult(collections.AsQueryable());
         }
         
         public async Task DeleteCollection(string id)

@@ -13,19 +13,17 @@ namespace FlashcardsApi.Controllers
     public class CardsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAuthorizationService authorizationService;
 
-        public CardsController(IStorage storage, IAuthorizationService authorizationService)
+        public CardsController(IStorage storage)
         {
             this.storage = storage;
-            this.authorizationService = authorizationService;
         }
 
         [Authorize]
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<Card>>> GetAll()
         {
-            return Ok(await Task.FromResult(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name)));
+            return Ok((await storage.GetAllCards()).Where(card => User.OwnsResource(card)));
         }
 
         [Authorize]
@@ -35,9 +33,8 @@ namespace FlashcardsApi.Controllers
             var card = await storage.FindCard(id);
             if (card == null)
                 return NotFound();
-            var authResult = await authorizationService.AuthorizeAsync(User, card, Policies.ResourceAccess);
-
-            if (authResult.Succeeded)
+            
+            if (User.OwnsResource(card))
                 return Ok(card);
             return Forbid();
         }
@@ -47,6 +44,13 @@ namespace FlashcardsApi.Controllers
         public async Task<ActionResult> CreateCard([FromBody] CardDto cardDto) 
         {
             var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name, cardDto.CollectionId);
+            var collection = await storage.FindCollection(cardDto.CollectionId);
+
+            if (collection == null)
+                return UnprocessableEntity("collection does not exist");
+            if (!User.OwnsResource(collection))
+                return Forbid();
+
             await storage.AddCard(newCard);
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
@@ -55,6 +59,13 @@ namespace FlashcardsApi.Controllers
         [HttpDelete("delete")]
         public async Task<ActionResult> DeleteCard([FromBody] string id)
         {
+            var card = await storage.FindCard(id);
+            if (card == null)
+                return NotFound();
+            
+            if (!User.OwnsResource(card))
+                return Forbid();
+
             await storage.DeleteCard(id);
             return Ok("Card deleted");
         }

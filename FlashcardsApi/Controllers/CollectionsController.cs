@@ -13,20 +13,18 @@ namespace FlashcardsApi.Controllers
     public class CollectionsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAuthorizationService authorizationService;
 
-        public CollectionsController(IStorage storage, IAuthorizationService authorizationService)
+        public CollectionsController(IStorage storage)
         {
             this.storage = storage;
-            this.authorizationService = authorizationService;
         }
 
         [Authorize]
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<CollectionDto>>> GetAll()
         {
-            return Ok(await Task.FromResult(storage.GetAllCollections()
-                .Where(collection => collection.OwnerLogin == User.Identity.Name)));
+            return Ok((await storage.GetAllCollections())
+                .Where(collection => User.OwnsResource(collection)));
         }
         
         [Authorize]
@@ -48,8 +46,7 @@ namespace FlashcardsApi.Controllers
             if (collection == null)
                 return NotFound();
 
-            var ownsResource = await IsUsersResource(User, collection);
-            if (ownsResource)
+            if (User.OwnsResource(collection))
                 return Ok(collection);
             return Forbid();
         }
@@ -62,8 +59,7 @@ namespace FlashcardsApi.Controllers
             if (collection == null)
                 return NotFound();
 
-            var ownsResource = await IsUsersResource(User, collection);
-            if (ownsResource)
+            if (User.OwnsResource(collection))
                 return Ok(await storage.GetCollectionCards(id));
             return Forbid();
         }
@@ -71,14 +67,15 @@ namespace FlashcardsApi.Controllers
         [HttpDelete("delete")]
         public async Task<ActionResult> DeleteCollection([FromBody] string id)
         {
+            var collection = await storage.FindCollection(id);
+            if (collection == null)
+                return NotFound();
+
+            if (!User.OwnsResource(collection))
+                return Forbid();
+
             await storage.DeleteCollection(id);
             return Ok("Collection deleted");
-        }
-
-        private async Task<bool> IsUsersResource(ClaimsPrincipal user, IOwnedResource resource)
-        {
-            var authResult = await authorizationService.AuthorizeAsync(user, resource, Policies.ResourceAccess);
-            return authResult.Succeeded;
         }
     }
 }
