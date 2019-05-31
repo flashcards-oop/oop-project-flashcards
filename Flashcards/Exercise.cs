@@ -1,14 +1,30 @@
-﻿namespace Flashcards
+﻿using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Flashcards
 {
     public class Exercise
     {
+        [BsonElement]
         public readonly Answer Answer;
+        [BsonElement]
         public readonly Question Question;
+        [BsonElement]
+        public readonly List<string> UsedCardsIds;
+
+        [BsonConstructor]
+        public Exercise(Answer answer, Question question, List<string> usedCardsIds)
+        {
+            Answer = answer;
+            Question = question;
+            UsedCardsIds = new List<string>();
+        }
 
         public Exercise(Answer answer, Question question)
         {
             Answer = answer;
             Question = question;
+            UsedCardsIds = new List<string>();
         }
 
         protected bool Equals(Exercise other)

@@ -31,7 +31,11 @@ namespace Flashcards
                 cards, bunchGenerators.Select(generator => generator.RequiredAmountOfCards));
             
             foreach (var (generator, cardBunch) in bunchGenerators.Zip(cardBunches, (gen, bunch) => (gen, bunch)))
-                yield return generator.GenerateExerciseFrom(cardBunch);
+            {
+                var exercise = generator.GenerateExerciseFrom(cardBunch);
+                exercise.UsedCardsIds.AddRange(cardBunch.Select(card => card.Id));
+                yield return exercise;
+            }    
         }
 
         IEnumerable<IExerciseGenerator> GetCardBunchGenerators()

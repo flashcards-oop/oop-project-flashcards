@@ -55,8 +55,8 @@ namespace FlashcardsApi
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
             
-            services.AddSingleton<IStorage, Mongo>();
-	        services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
+            services.AddSingleton<IStorage, MongoCardStorage>();
+	        services.AddSingleton<ITestStorage, MongoTestStorage>();
             services.AddSingleton<IUserStorage, MongoUserStorage>();
 
             services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();
