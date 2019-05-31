@@ -8,12 +8,12 @@ namespace FlashcardsTests
     [TestFixture]
     public class MongoShould
     {
-        private Mongo mongo;
+        private MongoCardStorage mongo;
         
         [SetUp]
         public void Init()
         {
-            mongo = new Mongo();
+            mongo = new MongoCardStorage();
         }
 
         [TearDown]
@@ -55,7 +55,7 @@ namespace FlashcardsTests
             await mongo.AddCard(card2);
             await mongo.AddCard(card3);
 
-            var allCards = await Task.FromResult(mongo.GetAllCards());
+            var allCards = await mongo.GetAllCards();
             Assert.That(allCards.Count(), Is.EqualTo(3));
 
             foreach (var card in allCards)
@@ -114,14 +114,14 @@ namespace FlashcardsTests
 
     public static class MongoExtensions
     {
-        public static async Task Clear(this Mongo mongo)
+        public static async Task Clear(this MongoCardStorage mongo)
         {
-            foreach (var card in mongo.GetAllCards())
+            foreach (var card in await mongo.GetAllCards())
             {
                 await mongo.DeleteCard(card.Id);
             }
             
-            foreach (var collection in mongo.GetAllCollections())
+            foreach (var collection in await mongo.GetAllCollections())
             {
                 await mongo.DeleteCollection(collection.Id);
             }

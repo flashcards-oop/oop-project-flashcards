@@ -12,13 +12,13 @@ namespace Flashcards
         public string OwnerLogin { get; }
 
         [BsonElement]
-        public IEnumerable<Exercise> exercises;
+        public IEnumerable<Exercise> Exercises;
 
         [BsonConstructor]
         public Test(IEnumerable<Exercise> exercises, string ownerLogin, string id = null)
         {
             Id = id ?? Guid.NewGuid().ToString();
-            this.exercises = exercises;
+            Exercises = exercises;
             OwnerLogin = ownerLogin;
         }
     }

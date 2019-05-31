@@ -13,15 +13,15 @@ namespace FlashcardsApi.Controllers
     public class TestsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAnswersStorage answersStorage;
+        private readonly ITestStorage testStorage;
         private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
 
         public TestsController(IStorage storage, 
-            IAnswersStorage answersStorage,
+            ITestStorage testStorage,
             IEnumerable<IExerciseGenerator> generators)
         {
             this.storage = storage;
-            this.answersStorage = answersStorage;
+            this.testStorage = testStorage;
 
             generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
             foreach (var generator in generators)
@@ -30,9 +30,9 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult<Dictionary<string, object>>> GenerateTest(TestDto test)
+        public async Task<ActionResult<Test>> GenerateTest(TestDto testDto)
         {
-            var collection = await storage.FindCollection(test.CollectionId);
+            var collection = await storage.FindCollection(testDto.CollectionId);
             if (collection is null)
             {
                 return NotFound();
@@ -41,23 +41,30 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(collection))
                 return Forbid();
 
-            var cards = await storage.GetCollectionCards(test.CollectionId);
+            var cards = await storage.GetCollectionCards(testDto.CollectionId);
 
             var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
-            foreach(var block in test.blocks)
+            foreach(var block in testDto.blocks)
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
             var exercises = testBuilder.Build().ToList();
-            var testId = await answersStorage.AddAnswers(exercises);
+            var test = new Test(exercises, User.Identity.Name);
+            await testStorage.AddTest(test);
 
-            return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
+            return Ok(test);
         }
 
         [HttpPost("check")]
         public async Task<ActionResult> CheckAnswers(TestAnswersDto answers)
         {
-            var correctAnswers = await answersStorage.FindAnswers(answers.TestId);
+            var test = await testStorage.FindTest(answers.TestId);
+            if (test == null)
+                return UnprocessableEntity("test with this id does not exist");
+            if (!User.OwnsResource(test))
+                return Forbid();
+
+            var correctAnswers = test.Exercises.Select(exercise => exercise.Answer);
             var counter = 
                 (from answer in correctAnswers 
                 let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 
