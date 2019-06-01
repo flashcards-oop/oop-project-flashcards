@@ -44,7 +44,7 @@ namespace FlashcardsApi.Controllers
             var cards = await storage.GetCollectionCards(testDto.CollectionId);
 
             var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
-            foreach(var block in testDto.blocks)
+            foreach(var block in testDto.Blocks)
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 

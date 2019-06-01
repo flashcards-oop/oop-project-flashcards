@@ -17,12 +17,12 @@ namespace FlashcardsApi.Models
     public class TestDto
     {
         public string CollectionId { get; }
-        public List<TestBlockDto> blocks;
+        public readonly List<TestBlockDto> Blocks;
         
         public TestDto(string collectionId, List<TestBlockDto> blocks)
         {
             CollectionId = collectionId;
-            this.blocks = blocks;
+            Blocks = blocks;
         }
     }
 }

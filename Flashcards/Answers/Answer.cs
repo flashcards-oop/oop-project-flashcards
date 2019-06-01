@@ -2,9 +2,9 @@ namespace Flashcards
 {
     public abstract class Answer
     {
-        public string Id { get; set; }
+        public string Id { get; protected set; }
 
-        public Answer(string id)
+        protected Answer(string id)
         {
             Id = id;
         }

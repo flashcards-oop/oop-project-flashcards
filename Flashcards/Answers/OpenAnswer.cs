@@ -36,7 +36,7 @@ namespace Flashcards
 
         public override int GetHashCode()
         {
-            return (Answer != null ? Answer.GetHashCode() : 0);
+            return Answer != null ? Answer.GetHashCode() : 0;
         }
     }
 }

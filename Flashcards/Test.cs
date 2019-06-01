@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Flashcards
@@ -12,12 +11,12 @@ namespace Flashcards
         public string OwnerLogin { get; }
 
         [BsonElement]
-        public IEnumerable<Exercise> Exercises;
+        public readonly IEnumerable<Exercise> Exercises;
 
         [BsonConstructor]
         public Test(IEnumerable<Exercise> exercises, string ownerLogin, string id = null)
         {
-            Id = id ?? Guid.NewGuid().ToString();
+            Id = id ?? GuidGenerator.GenerateGuid();
             Exercises = exercises;
             OwnerLogin = ownerLogin;
         }
