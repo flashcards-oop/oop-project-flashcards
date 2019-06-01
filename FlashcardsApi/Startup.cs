@@ -4,11 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Flashcards;
-using FlashcardsApi.Models;
-using System.Linq;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
 namespace FlashcardsApi
@@ -55,8 +52,8 @@ namespace FlashcardsApi
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
             
-            services.AddSingleton<IStorage, Mongo>();
-	        services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
+            services.AddSingleton<IStorage, MongoCardStorage>();
+	        services.AddSingleton<ITestStorage, MongoTestStorage>();
             services.AddSingleton<IUserStorage, MongoUserStorage>();
 
             services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();

@@ -5,7 +5,6 @@ using Flashcards;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using System.Security.Claims;
 
 namespace FlashcardsApi.Controllers
 {

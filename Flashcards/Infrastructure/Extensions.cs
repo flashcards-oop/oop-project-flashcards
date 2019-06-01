@@ -5,7 +5,7 @@ namespace Flashcards
 {
     public static class Extensions
     {
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 
         public static void Shuffle<T>(this IList<T> list)
         {

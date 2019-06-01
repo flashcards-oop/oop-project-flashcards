@@ -1,8 +1,8 @@
 using System;
 
-namespace Flashcards.Infrastructure
+namespace Flashcards
 {
-    public class GuidGenerator
+    public static class GuidGenerator
     {
         public static string GenerateGuid() => Guid.NewGuid().ToString();
     }

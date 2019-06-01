@@ -4,13 +4,13 @@ using MongoDB.Driver;
 
 namespace Flashcards
 {
-    public class Mongo : IStorage
+    public class MongoCardStorage : IStorage
     {
         private readonly IMongoCollection<Card> cards;
         private readonly IMongoCollection<Collection> collections;
 
 
-        public Mongo()
+        public MongoCardStorage()
         {
             var client = new MongoClient("mongodb://localhost:27017");
             var database = client.GetDatabase("flashcards");
