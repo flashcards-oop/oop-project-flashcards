@@ -2,7 +2,7 @@ namespace Flashcards
 {
     public abstract class Question
     {
-        protected string Id { get; set; }
+        public string Id { get; protected set; }
 
         protected Question(string id)
         {

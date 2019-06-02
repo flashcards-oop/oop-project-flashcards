@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -21,6 +22,12 @@ namespace Flashcards
         public async Task AddCard(Card card)
         {
             await cards.InsertOneAsync(card);
+        }
+
+        public async Task UpdateCardsAwareness(IEnumerable<string> ids, int delta)
+        {
+            var update = Builders<Card>.Update;
+            await cards.UpdateManyAsync(c => ids.Contains(c.Id), update.Inc(c => c.Awareness, delta));
         }
         
         public async Task<Card> FindCard(string id)

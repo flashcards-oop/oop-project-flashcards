@@ -17,7 +17,7 @@ namespace Flashcards
         {
             Answer = answer;
             Question = question;
-            UsedCardsIds = new List<string>();
+            UsedCardsIds = usedCardsIds;
         }
 
         public Exercise(Answer answer, Question question)
