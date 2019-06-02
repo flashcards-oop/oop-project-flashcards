@@ -6,6 +6,7 @@ namespace Flashcards
     public interface IStorage
     {
         Task AddCard(Card card);
+        Task UpdateCardsAwareness(IEnumerable<string> ids, int delta);
         Task<Card> FindCard(string id);
         Task<IEnumerable<Card>> GetAllCards();
         Task DeleteCard(string id);

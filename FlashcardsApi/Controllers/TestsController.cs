@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Flashcards;
@@ -56,7 +57,7 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpPost("check")]
-        public async Task<ActionResult> CheckAnswers(TestAnswersDto answers)
+        public async Task<ActionResult<TestResultsDto>> CheckAnswers(TestAnswersDto answers)
         {
             var test = await testStorage.FindTest(answers.TestId);
             if (test == null)
@@ -64,14 +65,26 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(test))
                 return Forbid();
 
-            var correctAnswers = test.Exercises.Select(exercise => exercise.Answer);
-            var counter = 
-                (from answer in correctAnswers 
-                let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 
-                where answer.IsTheSameAs(userAnswer) 
-                select answer).Count();
+            var results = new TestResultsDto();
 
-            return Ok($"You scored {counter}.");
+            foreach (var exercise in test.Exercises)
+            {
+                var userAnswer = answers.Answers.FirstOrDefault(a => a.Id == exercise.Answer.Id);
+                var isCorrect = userAnswer?.IsTheSameAs(exercise.Answer) ?? false;
+                if (isCorrect)
+                {
+                    await storage.UpdateCardsAwareness(exercise.UsedCardsIds, 3);
+                    results.CorrectAnswers += 1;
+                }
+                else
+                {
+                    await storage.UpdateCardsAwareness(exercise.UsedCardsIds, -3);
+                    results.WrongAnswers += 1;
+                }
+                results.Answers.Add(exercise.Question.Id, Tuple.Create(isCorrect, exercise.Answer));
+            }
+
+            return Ok(results);
         }
     }
 }
