@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Flashcards;
+using Flashcards.QuestionGenerators;
 
 
 namespace FlashcardsTests
