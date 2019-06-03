@@ -5,23 +5,27 @@ namespace Flashcards
 {
     public class Exercise
     {
+        [BsonId]
+        public string Id { get; }
         [BsonElement]
-        public readonly Answer Answer;
+        public readonly IAnswer Answer;
         [BsonElement]
-        public readonly Question Question;
+        public readonly IQuestion Question;
         [BsonElement]
         public readonly List<string> UsedCardsIds;
 
         [BsonConstructor]
-        public Exercise(Answer answer, Question question, List<string> usedCardsIds)
+        public Exercise(string id, IAnswer answer, IQuestion question, List<string> usedCardsIds)
         {
+            Id = id;
             Answer = answer;
             Question = question;
-            UsedCardsIds = new List<string>();
+            UsedCardsIds = usedCardsIds;
         }
 
-        public Exercise(Answer answer, Question question)
+        public Exercise(IAnswer answer, IQuestion question)
         {
+            Id = GuidGenerator.GenerateGuid();
             Answer = answer;
             Question = question;
             UsedCardsIds = new List<string>();
@@ -44,7 +48,8 @@ namespace Flashcards
         {
             unchecked
             {
-                return ((Answer != null ? Answer.GetHashCode() : 0) * 397) ^ (Question != null ? Question.GetHashCode() : 0);
+                return ((Answer != null ? Answer.GetHashCode() : 0) * 397) ^ 
+                       (Question != null ? Question.GetHashCode() : 0);
             }
         }
     }

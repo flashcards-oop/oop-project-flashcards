@@ -30,9 +30,9 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult<Test>> GenerateTest(TestDto testDto)
+        public async Task<ActionResult<TestDto>> GenerateTest(TestQueryDto testQueryDto)
         {
-            var collection = await storage.FindCollection(testDto.CollectionId);
+            var collection = await storage.FindCollection(testQueryDto.CollectionId);
             if (collection is null)
             {
                 return NotFound();
@@ -41,10 +41,10 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(collection))
                 return Forbid();
 
-            var cards = await storage.GetCollectionCards(testDto.CollectionId);
+            var cards = await storage.GetCollectionCards(testQueryDto.CollectionId);
 
             var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
-            foreach(var block in testDto.Blocks)
+            foreach(var block in testQueryDto.Blocks)
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
@@ -52,11 +52,11 @@ namespace FlashcardsApi.Controllers
             var test = new Test(exercises, User.Identity.Name);
             await testStorage.AddTest(test);
 
-            return Ok(test);
+            return Ok(new TestDto(test));
         }
 
         [HttpPost("check")]
-        public async Task<ActionResult> CheckAnswers(TestAnswersDto answers)
+        public async Task<ActionResult<TestResultsDto>> CheckAnswers(TestAnswersDto answers)
         {
             var test = await testStorage.FindTest(answers.TestId);
             if (test == null)
@@ -64,14 +64,25 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(test))
                 return Forbid();
 
-            var correctAnswers = test.Exercises.Select(exercise => exercise.Answer);
-            var counter = 
-                (from answer in correctAnswers 
-                let userAnswer = answers.Answers.First(a => a.Id == answer.Id) 
-                where answer.IsTheSameAs(userAnswer) 
-                select answer).Count();
+            var userAnswers = new Dictionary<string, IAnswer>();
+            foreach (var answer in answers.Answers)
+            {
+                if (!userAnswers.ContainsKey(answer.Id))
+                {
+                    userAnswers.Add(answer.Id, answer.Answer);
+                }
+            }
+            var verdicts = TestChecker.Check(userAnswers, test);
+            
+            var results = new TestResultsDto();
+            foreach (var (key, _) in verdicts)
+            {
+                var exercise = test.Exercises.First(e => e.Id == key);
+                results.Answers.Add(key, new ExerciseVerdictDto(verdicts[key], exercise.Answer));
+                await storage.UpdateCardsAwareness(exercise.UsedCardsIds, verdicts[key] ? 3 : -3);
+            }
 
-            return Ok($"You scored {counter}.");
+            return Ok(results);
         }
     }
 }

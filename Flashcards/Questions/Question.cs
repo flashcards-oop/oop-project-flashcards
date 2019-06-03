@@ -1,12 +1,7 @@
 namespace Flashcards
 {
-    public abstract class Question
+    public interface IQuestion
     {
-        protected string Id { get; set; }
-
-        protected Question(string id)
-        {
-            Id = id;
-        }
+        
     }
 }

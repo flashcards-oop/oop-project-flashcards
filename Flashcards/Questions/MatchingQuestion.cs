@@ -1,13 +1,12 @@
 ﻿namespace Flashcards
 {
-    public class MatchingQuestion : Question
+    public class MatchingQuestion : IQuestion
     {
         public string[] Terms { get; }
         public string[] Definitions { get; }
 
-        public MatchingQuestion(string[] terms, string[] definitions, string id) : base(id)
+        public MatchingQuestion(string[] terms, string[] definitions)
         {
-            Id = id;
             Terms = terms;
             Definitions = definitions;
         }

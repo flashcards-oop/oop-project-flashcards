@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Flashcards
+namespace Flashcards.QuestionGenerators
 {
     public class OpenQuestionExerciseGenerator : IExerciseGenerator
     {
@@ -17,13 +17,11 @@ namespace Flashcards
         {
             if (cards.Count != RequiredAmountOfCards)
                 throw new ArgumentException("Invalid amount of cards");
-            
-            var exerciseId = GuidGenerator.GenerateGuid();
 
             var card = cards.First();
             return new Exercise(
-                new OpenAnswer(card.Term, exerciseId), 
-                new OpenAnswerQuestion(card.Definition, exerciseId));
+                new OpenAnswer(card.Term), 
+                new OpenAnswerQuestion(card.Definition));
         }
     }
 }
