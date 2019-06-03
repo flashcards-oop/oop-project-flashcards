@@ -2,19 +2,18 @@
 
 namespace Flashcards
 {
-    public class ChoiceAnswer : Answer
+    public class ChoiceAnswer : IAnswer
     {
         [BsonElement]
         public string Answer { get; }
 
 		[BsonConstructor]
-        public ChoiceAnswer(string answer, string id) : base(id)
+        public ChoiceAnswer(string answer)
         {
-            Id = id;
             Answer = answer;
         }
 
-        public override bool IsTheSameAs(Answer otherAnswer)
+        public bool IsTheSameAs(IAnswer otherAnswer)
         {
             if (!(otherAnswer is ChoiceAnswer))
                 return false;
@@ -31,7 +30,7 @@ namespace Flashcards
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return IsTheSameAs((Answer) obj);
+            return IsTheSameAs((ChoiceAnswer) obj);
         }
 
         public override int GetHashCode()

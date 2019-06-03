@@ -33,8 +33,8 @@ namespace Flashcards
             var exerciseId = GuidGenerator.GenerateGuid();
 
             return new Exercise(
-                new ChoiceAnswer(targetCard.Term, exerciseId),
-                new ChoiceQuestion(targetCard.Definition, choices.ToArray(), exerciseId));
+                new ChoiceAnswer(targetCard.Term),
+                new ChoiceQuestion(targetCard.Definition, choices.ToArray()));
         }
     }
 }

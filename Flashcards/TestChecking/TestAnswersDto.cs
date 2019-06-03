@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Flashcards;
 
-namespace FlashcardsApi.Models
+namespace Flashcards.TestChecking
 {
     public class TestAnswersDto
     {
         public string TestId { get; set; }
-        public List<Answer> Answers { get; set; }
+        public List<ExerciseAnswerDto> Answers { get; set; }
     }
 }
