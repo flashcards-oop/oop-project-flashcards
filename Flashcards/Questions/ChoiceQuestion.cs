@@ -1,13 +1,12 @@
 ﻿namespace Flashcards
 {
-    public class ChoiceQuestion : Question
+    public class ChoiceQuestion : IQuestion
     {
         public string Definition { get; }
         public string[] Choices { get; }
 
-        public ChoiceQuestion(string definition, string[] choices, string id) : base(id)
+        public ChoiceQuestion(string definition, string[] choices)
         {
-            Id = id;
             Definition = definition;
             Choices = choices;
         }

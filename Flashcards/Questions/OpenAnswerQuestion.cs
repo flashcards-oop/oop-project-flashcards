@@ -1,12 +1,11 @@
 ﻿namespace Flashcards
 {
-    public class OpenAnswerQuestion : Question
+    public class OpenAnswerQuestion : IQuestion
     {
         public string Definition { get; }
 
-        public OpenAnswerQuestion(string definition, string id) : base(id)
+        public OpenAnswerQuestion(string definition)
         {
-            Id = id;
             Definition = definition;
         }
 

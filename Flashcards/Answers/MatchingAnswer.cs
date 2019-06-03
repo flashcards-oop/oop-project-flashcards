@@ -4,26 +4,22 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Flashcards
 {
-    public class MatchingAnswer : Answer
+    public class MatchingAnswer : IAnswer
     {
         [BsonElement]
         public readonly Dictionary<string, string> Matches;
 
 		[BsonConstructor]
-        public MatchingAnswer(Dictionary<string, string> matches, string id) : base(id)
+        public MatchingAnswer(Dictionary<string, string> matches)
         {
-            Id = id;
             Matches = matches;
         }
 
-        public override bool IsTheSameAs(Answer otherAnswer)
+        public bool IsTheSameAs(IAnswer otherAnswer)
         {
             if (!(otherAnswer is MatchingAnswer))
                 return false;
             var otherMatchingAnswer = (MatchingAnswer) otherAnswer;
-
-            //if (!ContnainsSameDefinitionsAs(otherMatchingAnswer))
-            //    return false;
 
             return Matches.Count == otherMatchingAnswer.Matches.Count &&
                    !Matches.Except(otherMatchingAnswer.Matches).Any();
@@ -35,18 +31,12 @@ namespace Flashcards
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return IsTheSameAs((Answer) obj);
+            return IsTheSameAs((MatchingAnswer) obj);
         }
 
         public override int GetHashCode()
         {
             return (Matches != null ? Matches.GetHashCode() : 0);
         }
-
-        //private bool ContnainsSameDefinitionsAs(MatchingAnswer otherMatchingAnswer)
-        //{
-        //    return Matches.Keys.All(key => otherMatchingAnswer.Matches.ContainsKey(key)) &&
-        //        otherMatchingAnswer.Matches.Keys.All(key => Matches.ContainsKey(key));
-        //}
     }
 }

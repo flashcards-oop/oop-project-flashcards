@@ -1,14 +1,7 @@
 namespace Flashcards
 {
-    public abstract class Answer
+    public interface IAnswer
     {
-        public string Id { get; protected set; }
-
-        protected Answer(string id)
-        {
-            Id = id;
-        }
-
-        public abstract bool IsTheSameAs(Answer other);
+        bool IsTheSameAs(IAnswer other);
     }
 }

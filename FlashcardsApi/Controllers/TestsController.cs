@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Flashcards;
@@ -6,6 +5,7 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using Flashcards.TestChecking;
 
 namespace FlashcardsApi.Controllers
 {   
@@ -31,9 +31,9 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult<Test>> GenerateTest(TestDto testDto)
+        public async Task<ActionResult<TestDto>> GenerateTest(TestQueryDto testQueryDto)
         {
-            var collection = await storage.FindCollection(testDto.CollectionId);
+            var collection = await storage.FindCollection(testQueryDto.CollectionId);
             if (collection is null)
             {
                 return NotFound();
@@ -42,10 +42,10 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(collection))
                 return Forbid();
 
-            var cards = await storage.GetCollectionCards(testDto.CollectionId);
+            var cards = await storage.GetCollectionCards(testQueryDto.CollectionId);
 
             var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
-            foreach(var block in testDto.Blocks)
+            foreach(var block in testQueryDto.Blocks)
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
@@ -53,7 +53,7 @@ namespace FlashcardsApi.Controllers
             var test = new Test(exercises, User.Identity.Name);
             await testStorage.AddTest(test);
 
-            return Ok(test);
+            return Ok(new TestDto(test));
         }
 
         [HttpPost("check")]
@@ -65,24 +65,7 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(test))
                 return Forbid();
 
-            var results = new TestResultsDto();
-
-            foreach (var exercise in test.Exercises)
-            {
-                var userAnswer = answers.Answers.FirstOrDefault(a => a.Id == exercise.Answer.Id);
-                var isCorrect = userAnswer?.IsTheSameAs(exercise.Answer) ?? false;
-                if (isCorrect)
-                {
-                    await storage.UpdateCardsAwareness(exercise.UsedCardsIds, 3);
-                    results.CorrectAnswers += 1;
-                }
-                else
-                {
-                    await storage.UpdateCardsAwareness(exercise.UsedCardsIds, -3);
-                    results.WrongAnswers += 1;
-                }
-                results.Answers.Add(exercise.Question.Id, Tuple.Create(isCorrect, exercise.Answer));
-            }
+            var results = TestChecker.Check(answers, test);
 
             return Ok(results);
         }

@@ -92,6 +92,11 @@
     <Compile Include="Storages\MongoUserStorage.cs" />
     <Compile Include="Answers\OpenAnswer.cs" />
     <Compile Include="Questions\OpenAnswerQuestion.cs" />
+    <Compile Include="TestChecking\ExerciseAnswerDto.cs" />
+    <Compile Include="TestChecking\ExerciseVerdictDto.cs" />
+    <Compile Include="TestChecking\TestAnswersDto.cs" />
+    <Compile Include="TestChecking\TestChecker.cs" />
+    <Compile Include="TestChecking\TestResultsDto.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
