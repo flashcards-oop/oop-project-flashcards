@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Flashcards.TestChecking
+namespace FlashcardsApi.Models
 {
     public class TestResultsDto
     {

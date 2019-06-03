@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Flashcards.TestChecking
+namespace FlashcardsApi.Models
 {
     public class TestAnswersDto
     {

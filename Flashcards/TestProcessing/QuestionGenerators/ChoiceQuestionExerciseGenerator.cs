@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Flashcards
+namespace Flashcards.QuestionGenerators
 {
     public class ChoiceQuestionExerciseGenerator : IExerciseGenerator
     {
@@ -29,8 +29,6 @@ namespace Flashcards
             var targetCard = cards[random.Next(RequiredAmountOfCards)];
             var choices = cards.Select(card => card.Term).ToList();
             choices.Shuffle();
-
-            var exerciseId = GuidGenerator.GenerateGuid();
 
             return new Exercise(
                 new ChoiceAnswer(targetCard.Term),

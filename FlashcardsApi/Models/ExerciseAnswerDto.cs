@@ -1,4 +1,6 @@
-namespace Flashcards.TestChecking
+using Flashcards;
+
+namespace FlashcardsApi.Models
 {
     public class ExerciseAnswerDto
     {

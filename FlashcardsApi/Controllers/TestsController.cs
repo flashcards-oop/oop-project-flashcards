@@ -5,7 +5,6 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using Flashcards.TestChecking;
 
 namespace FlashcardsApi.Controllers
 {   
@@ -65,7 +64,23 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(test))
                 return Forbid();
 
-            var results = TestChecker.Check(answers, test);
+            var userAnswers = new Dictionary<string, IAnswer>();
+            foreach (var answer in answers.Answers)
+            {
+                if (!userAnswers.ContainsKey(answer.Id))
+                {
+                    userAnswers.Add(answer.Id, answer.Answer);
+                }
+            }
+            var verdicts = TestChecker.Check(userAnswers, test);
+            
+            var results = new TestResultsDto();
+            foreach (var (key, _) in verdicts)
+            {
+                var exercise = test.Exercises.First(e => e.Id == key);
+                results.Answers.Add(key, new ExerciseVerdictDto(verdicts[key], exercise.Answer));
+                await storage.UpdateCardsAwareness(exercise.UsedCardsIds, verdicts[key] ? 3 : -3);
+            }
 
             return Ok(results);
         }
