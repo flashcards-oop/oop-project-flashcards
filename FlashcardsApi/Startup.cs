@@ -60,6 +60,9 @@ namespace FlashcardsApi
             services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, MatchingQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, OpenQuestionExerciseGenerator>();
+
+            services.AddSingleton<FilterGenerator>();
+            services.AddSingleton<IFilterConfigurator, AwarenessFilterConfigurator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
