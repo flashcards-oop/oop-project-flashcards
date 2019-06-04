@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsTests", "Flashcar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApi", "FlashcardsApi\FlashcardsApi.csproj", "{E8F953B0-F4E3-4318-AE08-FE80C9A113C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsClient", "FlashcardsClient\FlashcardsClient.csproj", "{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsClient", "FlashcardsClient\FlashcardsClient.csproj", "{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
