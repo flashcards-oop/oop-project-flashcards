@@ -25,24 +25,27 @@ namespace FlashcardsApi
 
         public Func<IEnumerable<Card>, IEnumerable<Card>> GetFilter(FilterDto filterDto)
         {
+            var configurator = configurators.Where(c => c.GetName() == filterDto.Name).FirstOrDefault();
+            if (configurator == null)
+                return cards => cards;
+
+            var subFilters = ExtractSubfilters(configurator, filterDto.Options);
+            return cards => cards.Where(card => subFilters.Select(subFilter => subFilter(card)).All(res => res));
+        }
+
+        private List<Func<Card, bool>> ExtractSubfilters(IFilterConfigurator configurator, Dictionary<string, object> filterOptions)
+        {
             var subFilters = new List<Func<Card, bool>>();
-            foreach (var configurator in configurators)
+
+            foreach (var optName in filterOptions.Keys.Intersect(availableOptions.Keys))
             {
-                if (configurator.GetName() == filterDto.Name)
-                {
-                    foreach(var optName in filterDto.Options.Keys)
-                    {
-                        var constraint = configurator.ExtractConstraint(filterDto.Options[optName]);
-                        Func<Card, IComparable> selector = configurator.GetMetrics;
-                        Func<Card, bool> subFilter = card => availableOptions[optName](constraint, selector(card));
-                        subFilters.Add(subFilter);
-                    }
-                }
+                var constraint = configurator.ExtractConstraint(filterOptions[optName]);
+                Func<Card, IComparable> selector = configurator.GetMetrics;
+                Func<Card, bool> subFilter = card => availableOptions[optName](constraint, selector(card));
+                subFilters.Add(subFilter);
             }
-            return cards => cards
-                    .Where(card => subFilters
-                        .Select(f => f(card))
-                        .All(res => res));
+
+            return subFilters;
         }
     }
 }
