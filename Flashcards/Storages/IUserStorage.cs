@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Flashcards
 {
     public interface IUserStorage
     {
-        Task AddUser(User user);
-        Task<User> FindUserById(string id);
-        Task<User> FindUserByLogin(string login);
+        Task AddUser(User user, CancellationToken token = default(CancellationToken));
+        Task<User> FindUserById(string id, CancellationToken token = default(CancellationToken));
+        Task<User> FindUserByLogin(string login, CancellationToken token = default(CancellationToken));
     }
 }

@@ -6,7 +6,7 @@ using Flashcards;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
-
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {
@@ -22,19 +22,19 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateAccount([FromBody] string login)
+        public async Task<IActionResult> CreateAccount([FromBody] string login, CancellationToken token)
         {
-            if (await userStorage.FindUserByLogin(login) != null)
+            if (await userStorage.FindUserByLogin(login, token) != null)
                 return Forbid();
 
-            await userStorage.AddUser(new User(login));
+            await userStorage.AddUser(new User(login), token);
             return NoContent();
         }
 
         [HttpPost("token")]
-        public async Task<IActionResult> Token([FromBody] string login)
+        public async Task<IActionResult> Token([FromBody] string login, CancellationToken token)
         {
-            var identity = await GetIdentity(login);
+            var identity = await GetIdentity(login, token);
             if (identity == null)
                 return BadRequest();
 
@@ -57,9 +57,9 @@ namespace FlashcardsApi.Controllers
             return Ok(response);
         }
 
-        private async Task<ClaimsIdentity> GetIdentity(string login)
+        private async Task<ClaimsIdentity> GetIdentity(string login, CancellationToken token = default(CancellationToken))
         {
-            var user = await userStorage.FindUserByLogin(login);
+            var user = await userStorage.FindUserByLogin(login, token);
             if (user == null)
                 return null;
 
