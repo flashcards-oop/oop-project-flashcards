@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -19,55 +20,55 @@ namespace Flashcards
             collections = database.GetCollection<Collection>("collections");
         }
         
-        public async Task AddCard(Card card)
+        public async Task AddCard(Card card, CancellationToken token = default(CancellationToken))
         {
-            await cards.InsertOneAsync(card);
+            await cards.InsertOneAsync(card, cancellationToken: token);
         }
 
-        public async Task UpdateCardsAwareness(IEnumerable<string> ids, int delta)
+        public async Task UpdateCardsAwareness(IEnumerable<string> ids, int delta, CancellationToken token = default(CancellationToken))
         {
             var update = Builders<Card>.Update;
-            await cards.UpdateManyAsync(c => ids.Contains(c.Id), update.Inc(c => c.Awareness, delta));
+            await cards.UpdateManyAsync(c => ids.Contains(c.Id), update.Inc(c => c.Awareness, delta), cancellationToken:token);
         }
         
-        public async Task<Card> FindCard(string id)
+        public async Task<Card> FindCard(string id, CancellationToken token = default(CancellationToken))
         {
-            return await cards.Find(c => c.Id == id).FirstOrDefaultAsync();
+            return await cards.Find(c => c.Id == id).FirstOrDefaultAsync(cancellationToken:token);
         }
         
-        public async Task<IEnumerable<Card>> GetAllCards()
+        public async Task<IEnumerable<Card>> GetAllCards(CancellationToken token = default(CancellationToken))
         {
-            return await Task.FromResult(cards.AsQueryable());
+            return await cards.Find(c => true).ToListAsync(cancellationToken: token);
         }
 
-        public async Task DeleteCard(string id)
+        public async Task DeleteCard(string id, CancellationToken token = default(CancellationToken))
         {
-            await cards.FindOneAndDeleteAsync(c => c.Id == id);
+            await cards.FindOneAndDeleteAsync(c => c.Id == id, cancellationToken: token);
         }
 
-        public async Task AddCollection(Collection collection)
+        public async Task AddCollection(Collection collection, CancellationToken token = default(CancellationToken))
         {
-            await collections.InsertOneAsync(collection);
+            await collections.InsertOneAsync(collection, cancellationToken: token);
         }
         
-        public async Task<Collection> FindCollection(string id)
+        public async Task<Collection> FindCollection(string id, CancellationToken token = default(CancellationToken))
         {
-            return await collections.Find(c => c.Id == id).FirstOrDefaultAsync();
+            return await collections.Find(c => c.Id == id).FirstOrDefaultAsync(cancellationToken: token);
         }
 
-        public async Task<IEnumerable<Collection>> GetAllCollections()
+        public async Task<IEnumerable<Collection>> GetAllCollections(CancellationToken token = default(CancellationToken))
         {
-            return await Task.FromResult(collections.AsQueryable());
+            return await collections.Find(c => true).ToListAsync(cancellationToken: token);
         }
         
-        public async Task DeleteCollection(string id)
+        public async Task DeleteCollection(string id, CancellationToken token = default(CancellationToken))
         {
-            await collections.FindOneAndDeleteAsync(c => c.Id == id);
+            await collections.FindOneAndDeleteAsync(c => c.Id == id, cancellationToken: token);
         }
 
-        public async Task<List<Card>> GetCollectionCards(string id)
+        public async Task<List<Card>> GetCollectionCards(string id, CancellationToken token = default(CancellationToken))
         {
-            return await cards.Find(c => c.CollectionId == id).ToListAsync();
+            return await cards.Find(c => c.CollectionId == id).ToListAsync(cancellationToken: token);
         }
     }
 }
