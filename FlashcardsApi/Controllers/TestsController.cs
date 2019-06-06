@@ -5,6 +5,7 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {   
@@ -30,9 +31,9 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult<TestDto>> GenerateTest(TestQueryDto testQueryDto)
+        public async Task<ActionResult<TestDto>> GenerateTest(TestQueryDto testQueryDto, CancellationToken token)
         {
-            var collection = await storage.FindCollection(testQueryDto.CollectionId);
+            var collection = await storage.FindCollection(testQueryDto.CollectionId, token);
             if (collection is null)
             {
                 return NotFound();
@@ -41,7 +42,7 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(collection))
                 return Forbid();
 
-            var cards = await storage.GetCollectionCards(testQueryDto.CollectionId);
+            var cards = await storage.GetCollectionCards(testQueryDto.CollectionId, token);
 
             var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
             foreach(var block in testQueryDto.Blocks)
@@ -50,15 +51,15 @@ namespace FlashcardsApi.Controllers
 
             var exercises = testBuilder.Build().ToList();
             var test = new Test(exercises, User.Identity.Name);
-            await testStorage.AddTest(test);
+            await testStorage.AddTest(test, token);
 
             return Ok(new TestDto(test));
         }
 
         [HttpPost("check")]
-        public async Task<ActionResult<TestResultsDto>> CheckAnswers(TestAnswersDto answers)
+        public async Task<ActionResult<TestResultsDto>> CheckAnswers(TestAnswersDto answers, CancellationToken token)
         {
-            var test = await testStorage.FindTest(answers.TestId);
+            var test = await testStorage.FindTest(answers.TestId, token);
             if (test == null)
                 return UnprocessableEntity("test with this id does not exist");
             if (!User.OwnsResource(test))
@@ -79,7 +80,7 @@ namespace FlashcardsApi.Controllers
             {
                 var exercise = test.Exercises.First(e => e.Id == key);
                 results.Answers.Add(key, new ExerciseVerdictDto(verdicts[key], exercise.Answer));
-                await storage.UpdateCardsAwareness(exercise.UsedCardsIds, verdicts[key] ? 3 : -3);
+                await storage.UpdateCardsAwareness(exercise.UsedCardsIds, verdicts[key] ? 3 : -3, token);
             }
 
             return Ok(results);
