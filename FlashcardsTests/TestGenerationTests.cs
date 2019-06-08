@@ -26,31 +26,37 @@ namespace FlashcardsTests
         [Test]
         public void GenerateOpenAnswerTest()
         {
-            var test = new TestBuilder(testCards, new RandomCardsSelector())
+            var exercises = new TestBuilder(testCards, new RandomCardsSelector())
                 .WithGenerator(new OpenQuestionExerciseGenerator(), 3)
                 .Build();
             
-            Assert.That(test.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Select(ex => ex.Question), 
+                Has.All.InstanceOf<OpenAnswerQuestion>());
         }
 
         [Test]
         public void GenerateChoiceTest()
         {
-            var test = new TestBuilder(testCards, new RandomCardsSelector())
+            var exercises = new TestBuilder(testCards, new RandomCardsSelector())
                 .WithGenerator(new ChoiceQuestionExerciseGenerator(), 3)
                 .Build();
             
-            Assert.That(test.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Select(ex => ex.Question),
+                Has.All.InstanceOf<ChoiceQuestion>());
         }
 
         [Test]
         public void GenerateMatchingTest()
         {
-            var test = new TestBuilder(testCards, new RandomCardsSelector())
+            var exercises = new TestBuilder(testCards, new RandomCardsSelector())
                 .WithGenerator(new MatchingQuestionExerciseGenerator(), 3)
                 .Build();
             
-            Assert.That(test.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Count(), Is.EqualTo(3));
+            Assert.That(exercises.Select(ex => ex.Question),
+                Has.All.InstanceOf<MatchingQuestion>());
         }
 
         [Test]
@@ -78,14 +84,10 @@ namespace FlashcardsTests
             var question = exercise.Question as MatchingQuestion;
             Assert.That(question.Terms, Is.EquivalentTo(cards.Select(card => card.Term)));
             Assert.That(question.Definitions, Is.EquivalentTo(cards.Select(card => card.Definition)));
-            //Assert.Contains("t1", question.Terms);
-            //Assert.Contains("t2", question.Terms);
-            //Assert.Contains("d1", question.Definitions);
-            //Assert.Contains("d2", question.Definitions);
-
+           
             var answer = exercise.Answer as MatchingAnswer;
-            Assert.That(answer.Matches["d1"] == "t1");
-            Assert.That(answer.Matches["d2"] == "t2");
+            Assert.AreEqual(answer.Matches["d1"], "t1");
+            Assert.AreEqual(answer.Matches["d2"], "t2");
         }
 
         [Test]
