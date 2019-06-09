@@ -1,26 +1,21 @@
-using System;
-using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Flashcards
 {
     public class Collection : IOwnedResource
     {
-        public string Id { get; protected set; }
+        public string Id { get; }
         [BsonElement]
-        public string Name { get; protected set; }
-        [BsonIgnoreIfNull]
-        public List<Card> Cards { get; }
+        public string Name { get; }
         [BsonElement]
-        public string OwnerLogin { get; protected set; }
+        public string OwnerLogin { get; }
         
         [BsonConstructor]
-        public Collection(string name, string ownerLogin, string id = null, List<Card> cards = null)
+        public Collection(string name, string ownerLogin, string id = null)
         {
-            Id = id ?? Guid.NewGuid().ToString();
+            Id = id ?? GuidGenerator.GenerateGuid();
             Name = name;
             OwnerLogin = ownerLogin;
-            Cards = cards ?? new List<Card>();
         }
 
         protected Collection()

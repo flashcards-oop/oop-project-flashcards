@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
@@ -11,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApi", "Flashcards
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsClient", "FlashcardsClient\FlashcardsClient.csproj", "{5B2898C4-9428-4C32-AFDE-BF629CFDCC55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsApiTests", "FlashcardsApiTests\FlashcardsApiTests.csproj", "{CE60C014-1FB4-4942-9D09-867A05BF4FE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApiTests", "FlashcardsApiTests\FlashcardsApiTests.csproj", "{CE60C014-1FB4-4942-9D09-867A05BF4FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

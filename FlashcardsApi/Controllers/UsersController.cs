@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Flashcards;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
-
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {
@@ -13,7 +14,7 @@ namespace FlashcardsApi.Controllers
     [ApiController]
     public class UsersController : Controller
     {
-        IUserStorage userStorage;
+        private readonly IUserStorage userStorage;
 
         public UsersController(IUserStorage userStorage)
         {
@@ -21,19 +22,19 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateAccount([FromBody] string login)
+        public async Task<IActionResult> CreateAccount([FromBody] string login, CancellationToken token)
         {
-            if (userStorage.FindUserByLogin(login) == null)
+            if (await userStorage.FindUserByLogin(login, token) != null)
                 return Forbid();
 
-            userStorage.AddUser(new User(login));
+            await userStorage.AddUser(new User(login), token);
             return NoContent();
         }
 
         [HttpPost("token")]
-        public IActionResult Token([FromBody] string login)
+        public async Task<IActionResult> Token([FromBody] string login, CancellationToken token)
         {
-            var identity = GetIdentity(login);
+            var identity = await GetIdentity(login, token);
             if (identity == null)
                 return BadRequest();
 
@@ -44,7 +45,8 @@ namespace FlashcardsApi.Controllers
                     notBefore: now,
                     claims: identity.Claims,
                     expires: now.Add(TimeSpan.FromMinutes(AuthOptions.Lifetime)),
-                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), 
+                        SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new
@@ -55,9 +57,9 @@ namespace FlashcardsApi.Controllers
             return Ok(response);
         }
 
-        private ClaimsIdentity GetIdentity(string login)
+        private async Task<ClaimsIdentity> GetIdentity(string login, CancellationToken token = default(CancellationToken))
         {
-            User user = userStorage.FindUserByLogin(login);
+            var user = await userStorage.FindUserByLogin(login, token);
             if (user == null)
                 return null;
 
@@ -65,7 +67,7 @@ namespace FlashcardsApi.Controllers
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login)
             };
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");
+            var claimsIdentity = new ClaimsIdentity(claims, "Token");
             return claimsIdentity;
         }
     }

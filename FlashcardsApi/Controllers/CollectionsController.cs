@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
-using AutoMapper;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using System.Security.Claims;
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {
@@ -15,108 +13,69 @@ namespace FlashcardsApi.Controllers
     public class CollectionsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAuthorizationService authorizationService;
 
-        public CollectionsController(IStorage storage, IAuthorizationService authorizationService)
+        public CollectionsController(IStorage storage)
         {
             this.storage = storage;
-            this.authorizationService = authorizationService;
         }
 
         [Authorize]
         [HttpGet("all")]
-        public ActionResult<IEnumerable<CollectionInfoDto>> GetAll()
+        public async Task<ActionResult<IEnumerable<CollectionDto>>> GetAll(CancellationToken token)
         {
-            return Ok(storage.GetAllCollections()
-                .Where(collection => collection.OwnerLogin == User.Identity.Name)
-                .Select(Mapper.Map<CollectionInfoDto>));
+            return Ok((await storage.GetAllCollections(token))
+                .Where(collection => User.OwnsResource(collection)));
         }
-
-        [Authorize]
-        [HttpGet("{id}", Name = "GetCollectionById")]
-        public async Task<ActionResult> GetById(string id)
-        {
-            var collection = storage.FindCollection(id);
-            if (collection == null)
-                return NotFound();
-
-            var ownsResource = await IsUsersResource(User, collection);
-            if (ownsResource)
-                return Ok(Mapper.Map<CollectionDto>(collection));
-            return Forbid();
-        }
-
+        
         [Authorize]
         [HttpPost("create")]
-        public ActionResult AddCollection([FromBody] string name)
+        public async Task<ActionResult> AddCollection([FromBody] string name, CancellationToken token)
         {
             var newCollection = new Collection(name, User.Identity.Name);
-            storage.AddCollection(newCollection);
+            await storage.AddCollection(newCollection, token);
 
             return CreatedAtRoute(
                 "GetCollectionById", new { id = newCollection.Id }, newCollection.Id);
         }
 
-        [HttpDelete("delete")]
-        public ActionResult DeleteCollection([FromBody] string id)
+        [Authorize]
+        [HttpGet("{id}", Name = "GetCollectionById")]
+        public async Task<ActionResult> GetCollection(string id, CancellationToken token)
         {
-            storage.DeleteCollection(id);
-            return Ok("Collection deleted");
-        }
-
-	[Authorize]
-        [HttpPost("{id}/add")]
-        public async Task<ActionResult> AddCardToCollection(string id, [FromBody] string cardId)
-        {
-            try
-            {
-                if (await IsAuthorizedCollectionOperation(id, cardId))
-                {
-                    storage.AddCardToCollection(id, cardId);
-                    return NoContent();
-                }
-                return Forbid();
-            }
-            catch (InvalidOperationException)
-            {
+            var collection = await storage.FindCollection(id, token);
+            if (collection == null)
                 return NotFound();
-            }
+
+            if (User.OwnsResource(collection))
+                return Ok(collection);
+            return Forbid();
         }
 
         [Authorize]
-        [HttpPost("{id}/remove")]
-        public async Task<ActionResult> RemoveCardFromCollection(string id, [FromBody] string cardId)
+        [HttpGet("{id}/cards", Name = "GetCollectionCards")]
+        public async Task<ActionResult> GetCollectionCards(string id, CancellationToken token)
         {
-            try
-            {
-                if (await IsAuthorizedCollectionOperation(id, cardId))
-                {
-                    storage.RemoveCardFromCollection(id, cardId);
-                    return NoContent();
-                }
-                return Forbid();
-            }
-            catch (InvalidOperationException)
-            {
+            var collection = await storage.FindCollection(id, token);
+            if (collection == null)
                 return NotFound();
-            }
+
+            if (User.OwnsResource(collection))
+                return Ok(await storage.GetCollectionCards(id, token));
+            return Forbid();
         }
 
-        private async Task<bool> IsAuthorizedCollectionOperation(string collectionId, string cardId)
+        [HttpDelete("delete")]
+        public async Task<ActionResult> DeleteCollection([FromBody] string id, CancellationToken token)
         {
-            var collection = storage.FindCollection(collectionId);
-            var card = storage.FindCard(cardId);
-            if (collection == null || card == null)
-                throw new InvalidOperationException();
+            var collection = await storage.FindCollection(id, token);
+            if (collection == null)
+                return NotFound();
 
-            var ownershipChecks = await Task.WhenAll(new []{ IsUsersResource(User, card), IsUsersResource(User, collection) });
-            return ownershipChecks.All(check => check);
-        }
+            if (!User.OwnsResource(collection))
+                return Forbid();
 
-        private async Task<bool> IsUsersResource(ClaimsPrincipal user, IOwnedResource resource)
-        {
-            var authResult = await authorizationService.AuthorizeAsync(user, resource, Policies.ResourceAccess);
-            return authResult.Succeeded;
+            await storage.DeleteCollection(id, token);
+            return Ok("Collection deleted");
         }
     }
 }

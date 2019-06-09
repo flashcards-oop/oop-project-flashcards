@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Flashcards
+﻿namespace Flashcards
 {
-    public class OpenAnswerQuestion : Question
+    public class OpenAnswerQuestion : IQuestion
     {
         public string Definition { get; }
 

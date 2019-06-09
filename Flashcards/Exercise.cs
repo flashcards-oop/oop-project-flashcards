@@ -1,14 +1,34 @@
-﻿namespace Flashcards
+﻿using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Flashcards
 {
     public class Exercise
     {
-        public readonly Answer Answer;
-        public readonly Question Question;
+        [BsonId]
+        public string Id { get; }
+        [BsonElement]
+        public readonly IAnswer Answer;
+        [BsonElement]
+        public readonly IQuestion Question;
+        [BsonElement]
+        public readonly List<string> UsedCardsIds;
 
-        public Exercise(Answer answer, Question question)
+        [BsonConstructor]
+        public Exercise(string id, IAnswer answer, IQuestion question, List<string> usedCardsIds)
         {
+            Id = id;
             Answer = answer;
             Question = question;
+            UsedCardsIds = usedCardsIds;
+        }
+
+        public Exercise(IAnswer answer, IQuestion question)
+        {
+            Id = GuidGenerator.GenerateGuid();
+            Answer = answer;
+            Question = question;
+            UsedCardsIds = new List<string>();
         }
 
         protected bool Equals(Exercise other)
@@ -28,7 +48,8 @@
         {
             unchecked
             {
-                return ((Answer != null ? Answer.GetHashCode() : 0) * 397) ^ (Question != null ? Question.GetHashCode() : 0);
+                return ((Answer != null ? Answer.GetHashCode() : 0) * 397) ^ 
+                       (Question != null ? Question.GetHashCode() : 0);
             }
         }
     }

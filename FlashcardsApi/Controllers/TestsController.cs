@@ -1,50 +1,89 @@
 using System.Collections.Generic;
+using System.Linq;
 using Flashcards;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class TestsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAnswersStorage answersStorage;
-        private readonly IAuthorizationService authorizationService;
+        private readonly ITestStorage testStorage;
+        private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
 
-        public TestsController(IStorage storage, IAnswersStorage answersStorage, IAuthorizationService authorizationService)
+        public TestsController(IStorage storage, 
+            ITestStorage testStorage,
+            IEnumerable<IExerciseGenerator> generators)
         {
             this.storage = storage;
-            this.answersStorage = answersStorage;
-            this.authorizationService = authorizationService;
+            this.testStorage = testStorage;
+
+            generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
+            foreach (var generator in generators)
+                generatorsByCaption[generator.GetTypeCaption()] = generator;
         }
 
         [Authorize]
         [HttpPost("generate")]
-        public async Task<ActionResult> GenerateTest(TestDto test)
+        public async Task<ActionResult<TestDto>> GenerateTest(TestQueryDto testQueryDto, CancellationToken token)
         {
-            var collection = storage.FindCollection(test.CollectionId);
+            var collection = await storage.FindCollection(testQueryDto.CollectionId, token);
             if (collection is null)
             {
                 return NotFound();
             }
 
-            var authResult = await authorizationService.AuthorizeAsync(User, collection, Policies.ResourceAccess);
-            if (!authResult.Succeeded)
+            if (!User.OwnsResource(collection))
                 return Forbid();
 
-            var builder = new TestBuilder(collection.Cards);
-            builder.GenerateTasks(test.OpenCnt, typeof(OpenAnswerQuestion));
-            builder.GenerateTasks(test.ChoiceCnt, typeof(ChoiceQuestion));
-            builder.GenerateTasks(test.MatchCnt, typeof(MatchingQuestion));
+            var cards = await storage.GetCollectionCards(testQueryDto.CollectionId, token);
 
-            var exercises = builder.Build();
-            var testId = answersStorage.AddAnswers(exercises);
+            var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
+            foreach(var block in testQueryDto.Blocks)
+                if (generatorsByCaption.ContainsKey(block.Type))
+                    testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
-            return Ok(new Dictionary<string, object>{{"testId", testId}, {"exercises", exercises}});
+            var exercises = testBuilder.Build().ToList();
+            var test = new Test(exercises, User.Identity.Name);
+            await testStorage.AddTest(test, token);
+
+            return Ok(new TestDto(test));
+        }
+
+        [HttpPost("check")]
+        public async Task<ActionResult<TestResultsDto>> CheckAnswers(TestAnswersDto answers, CancellationToken token)
+        {
+            var test = await testStorage.FindTest(answers.TestId, token);
+            if (test == null)
+                return UnprocessableEntity("test with this id does not exist");
+            if (!User.OwnsResource(test))
+                return Forbid();
+
+            var userAnswers = new Dictionary<string, IAnswer>();
+            foreach (var answer in answers.Answers)
+            {
+                if (!userAnswers.ContainsKey(answer.Id))
+                {
+                    userAnswers.Add(answer.Id, answer.Answer);
+                }
+            }
+            var verdicts = TestChecker.Check(userAnswers, test);
+            
+            var results = new TestResultsDto();
+            foreach (var (key, _) in verdicts)
+            {
+                var exercise = test.Exercises.First(e => e.Id == key);
+                results.Answers.Add(key, new ExerciseVerdictDto(verdicts[key], exercise.Answer));
+                await storage.UpdateCardsAwareness(exercise.UsedCardsIds, verdicts[key] ? 3 : -3, token);
+            }
+
+            return Ok(results);
         }
     }
 }

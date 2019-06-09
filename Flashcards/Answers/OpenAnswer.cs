@@ -2,17 +2,18 @@
 
 namespace Flashcards
 {
-    public class OpenAnswer : Answer
+    public class OpenAnswer : IAnswer
     {
         [BsonElement]
         public string Answer { get; }
 
+		[BsonConstructor]
         public OpenAnswer(string answer)
         {
             Answer = answer;
         }
 
-        public override bool IsTheSameAs(Answer otherAnswer)
+        public bool IsTheSameAs(IAnswer otherAnswer)
         {
             if (!(otherAnswer is OpenAnswer))
                 return false;
@@ -28,13 +29,13 @@ namespace Flashcards
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return IsTheSameAs((Answer) obj);
+            if (obj.GetType() != GetType()) return false;
+            return IsTheSameAs((OpenAnswer) obj);
         }
 
         public override int GetHashCode()
         {
-            return (Answer != null ? Answer.GetHashCode() : 0);
+            return Answer != null ? Answer.GetHashCode() : 0;
         }
     }
 }

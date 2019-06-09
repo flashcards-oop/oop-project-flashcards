@@ -1,18 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
+using Flashcards;
+
 namespace FlashcardsApi.Models
 {
     public class TestDto
     {
-        public string CollectionId { get; }
-        public int OpenCnt { get; }
-        public int ChoiceCnt { get; }
-        public int MatchCnt { get; }
-        
-        public TestDto(string collectionId, int openCnt, int choiceCnt, int matchCnt)
+        public string TestId { get; }
+        public List<ExerciseDto> Exercises { get; }
+
+        public TestDto(Test test)
         {
-            CollectionId = collectionId;
-            OpenCnt = openCnt;
-            ChoiceCnt = choiceCnt;
-            MatchCnt = matchCnt;
+            TestId = test.Id;
+            Exercises = test.Exercises.Select(e => new ExerciseDto(e.Id, e.Question)).ToList();
         }
     }
 }

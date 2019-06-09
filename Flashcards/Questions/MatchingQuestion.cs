@@ -1,6 +1,6 @@
 ﻿namespace Flashcards
 {
-    public class MatchingQuestion : Question
+    public class MatchingQuestion : IQuestion
     {
         public string[] Terms { get; }
         public string[] Definitions { get; }

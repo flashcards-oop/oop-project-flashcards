@@ -5,6 +5,7 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {
@@ -13,50 +14,60 @@ namespace FlashcardsApi.Controllers
     public class CardsController : Controller
     {
         private readonly IStorage storage;
-        private readonly IAuthorizationService authorizationService;
 
-        public CardsController(IStorage storage, IAuthorizationService authorizationService)
+        public CardsController(IStorage storage)
         {
             this.storage = storage;
-            this.authorizationService = authorizationService;
         }
 
         [Authorize]
         [HttpGet("all")]
-        public ActionResult<IEnumerable<Card>> GetAll()
+        public async Task<ActionResult<IEnumerable<Card>>> GetAll(CancellationToken token)
         {
-            return Ok(storage.GetAllCards().Where(card => card.OwnerLogin == User.Identity.Name));
+            return Ok((await storage.GetAllCards(token)).Where(card => User.OwnsResource(card)));
         }
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCardById")]
-        public async Task<ActionResult<Card>> GetById([FromRoute] string id)
+        public async Task<ActionResult<Card>> GetById([FromRoute] string id, CancellationToken token)
         {
-            var card = storage.FindCard(id);
+            var card = await storage.FindCard(id, token);
             if (card == null)
                 return NotFound();
-            var authResult = await authorizationService.AuthorizeAsync(User, card, Policies.ResourceAccess);
-
-            if (authResult.Succeeded)
+            
+            if (User.OwnsResource(card))
                 return Ok(card);
             return Forbid();
         }
 
         [Authorize]
         [HttpPost("create")]
-        public ActionResult CreateCard([FromBody] CardDto cardDto) 
+        public async Task<ActionResult> CreateCard([FromBody] CardDto cardDto, CancellationToken token) 
         {
-            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name);
-            storage.AddCard(newCard);
+            var newCard = new Card(cardDto.Term, cardDto.Definition, User.Identity.Name, cardDto.CollectionId);
+            var collection = await storage.FindCollection(cardDto.CollectionId, token);
 
+            if (collection == null)
+                return UnprocessableEntity("collection does not exist");
+            if (!User.OwnsResource(collection))
+                return Forbid();
+
+            await storage.AddCard(newCard, token);
             return CreatedAtRoute(
                 "GetCardById", new { id = newCard.Id }, newCard.Id);
         }
 
         [HttpDelete("delete")]
-        public ActionResult DeleteCard([FromBody] string id)
+        public async Task<ActionResult> DeleteCard([FromBody] string id, CancellationToken token)
         {
-            storage.DeleteCard(id);
+            var card = await storage.FindCard(id, token);
+            if (card == null)
+                return NotFound();
+            
+            if (!User.OwnsResource(card))
+                return Forbid();
+
+            await storage.DeleteCard(id, token);
             return Ok("Card deleted");
         }
     }

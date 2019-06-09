@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Flashcards;
-using FlashcardsApi.Models;
-using System.Linq;
+using Flashcards.QuestionGenerators;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace FlashcardsApi
 {
@@ -42,26 +41,25 @@ namespace FlashcardsApi
                             ValidateIssuerSigningKey = true,
                         };
                     });
-
+            /*
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(Policies.ResourceAccess, policy => policy.Requirements.Add(new SameOwnerRequirement()));
             });
             services.AddSingleton<IAuthorizationHandler, OwnedResourcesAuthorizationHandler>();
+            */
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
+            
+            services.AddSingleton<IStorage, MongoCardStorage>();
+	        services.AddSingleton<ITestStorage, MongoTestStorage>();
+            services.AddSingleton<IUserStorage, MongoUserStorage>();
 
-            AutoMapper.Mapper.Initialize(config =>
-                config.CreateMap<Collection, CollectionDto>()
-                    .ForMember(
-                        dto => dto.CardIds, 
-                        opt => opt.MapFrom(coll => coll.Cards.Select(card => card.Id))
-                    )
-            );
-            services.AddSingleton<IStorage, Mongo>();
-	    services.AddSingleton<IAnswersStorage>(new MongoAnswersStorage());
-            services.AddSingleton<IUserStorage, DumbUserStorage>();
+            services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();
+            services.AddSingleton<IExerciseGenerator, MatchingQuestionExerciseGenerator>();
+            services.AddSingleton<IExerciseGenerator, OpenQuestionExerciseGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

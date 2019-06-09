@@ -1,14 +1,14 @@
 ﻿namespace Flashcards
 {
-    public class ChoiceQuestion : Question
+    public class ChoiceQuestion : IQuestion
     {
         public string Definition { get; }
         public string[] Choices { get; }
 
-        public ChoiceQuestion(string definition, string[] choises)
+        public ChoiceQuestion(string definition, string[] choices)
         {
             Definition = definition;
-            Choices = choises;
+            Choices = choices;
         }
 
         protected bool Equals(ChoiceQuestion other)
