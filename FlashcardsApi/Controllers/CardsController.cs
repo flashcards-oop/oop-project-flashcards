@@ -14,10 +14,12 @@ namespace FlashcardsApi.Controllers
     public class CardsController : Controller
     {
         private readonly IStorage storage;
+        private readonly FilterGenerator filterGenerator;
 
-        public CardsController(IStorage storage)
+        public CardsController(IStorage storage, FilterGenerator filterGenerator)
         {
             this.storage = storage;
+            this.filterGenerator = filterGenerator;
         }
 
         [Authorize]
@@ -26,6 +28,18 @@ namespace FlashcardsApi.Controllers
         {
             await Task.Delay(20000, token);
             return Ok((await storage.GetAllCards(token)).Where(card => User.OwnsResource(card)));
+        }
+
+        [Authorize]
+        [HttpPost("all")]
+        public async Task<ActionResult<IEnumerable<Card>>> GetAllFiltered([FromBody] FilterDto filterDto)
+        {
+            var cards = (await storage.GetAllCards()).Where(card => User.OwnsResource(card));
+            
+            var filter = filterGenerator.GetFilter(filterDto);
+            if (filter != null)
+                cards = filter(cards);
+            return Ok(cards);
         }
 
         [Authorize]
