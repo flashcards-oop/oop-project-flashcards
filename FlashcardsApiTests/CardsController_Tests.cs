@@ -111,5 +111,30 @@ namespace FlashcardsApiTests
 
             result.Result.Should().BeOfType<ForbidResult>();
         }
+
+        [Test]
+        public async Task GetById_ShouldReturnRequestedCard()
+        {
+            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+                .Returns(cards[0]);
+
+            var result = await controller.GetById(cards[0].Id, default(CancellationToken));
+
+            result.Result.Should().BeOfType<OkObjectResult>();
+            (result.Result as OkObjectResult).Value.Should().BeEquivalentTo(cards[0]);
+        }
+
+        [Test]
+        public async Task DeleteCard_ShouldDeleteCard()
+        {
+            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+                .Returns(cards[0]);
+
+            var result = await controller.DeleteCard(cards[0].Id, default(CancellationToken));
+
+            result.Should().BeOfType<OkObjectResult>();
+            A.CallTo(() => fakeStorage.DeleteCard(cards[0].Id, default(CancellationToken)))
+                .MustHaveHappened();
+        }
     }
 }

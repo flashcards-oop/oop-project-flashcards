@@ -66,10 +66,13 @@
     <Compile Include="Card.cs" />
     <Compile Include="Answers\ChoiceAnswer.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="TestProcessing\ITestBuilderFactory.cs" />
+    <Compile Include="TestProcessing\TestBuilderFactory.cs" />
     <Compile Include="TestProcessing\ICardsSelector.cs" />
     <Compile Include="TestProcessing\IExerciseGenerator.cs" />
     <Compile Include="Infrastructure\GuidGenerator.cs" />
     <Compile Include="IOwnedResource.cs" />
+    <Compile Include="TestProcessing\ITestBuilder.cs" />
     <Compile Include="TestProcessing\QuestionGenerators\ChoiceQuestionExerciseGenerator.cs" />
     <Compile Include="TestProcessing\QuestionGenerators\MatchingQuestionExerciseGenerator.cs" />
     <Compile Include="TestProcessing\QuestionGenerators\OpenQuestionExerciseGenerator.cs" />

@@ -8,6 +8,7 @@ using Flashcards.QuestionGenerators;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json;
+using Flashcards.TestProcessing;
 
 namespace FlashcardsApi
 {
@@ -60,6 +61,7 @@ namespace FlashcardsApi
             services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, MatchingQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, OpenQuestionExerciseGenerator>();
+            services.AddSingleton<TestBuilderFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
