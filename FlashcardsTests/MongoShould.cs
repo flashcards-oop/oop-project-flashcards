@@ -13,9 +13,7 @@ namespace FlashcardsTests
         private readonly MongoContext context = new MongoContext(new MongoDbConfig
         {
             Host = "localhost", 
-            Port = 27017,
-            User = "root",
-            Password = "example"
+            Port = 27017
         });
 
         private MongoCardStorage mongo;
