@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Flashcards;
+using FlashcardsApi.Config;
+using FlashcardsApi.Mongo;
 using NUnit.Framework;
 
 namespace FlashcardsTests
@@ -8,12 +10,20 @@ namespace FlashcardsTests
     [TestFixture]
     public class MongoShould
     {
+        private readonly MongoContext context = new MongoContext(new MongoDbConfig
+        {
+            Host = "localhost", 
+            Port = 27017,
+            User = "root",
+            Password = "example"
+        });
+
         private MongoCardStorage mongo;
         
         [SetUp]
         public void Init()
         {
-            mongo = new MongoCardStorage();
+            mongo = new MongoCardStorage(context);
         }
 
         [TearDown]
