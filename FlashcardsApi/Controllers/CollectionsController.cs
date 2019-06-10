@@ -5,6 +5,7 @@ using Flashcards;
 using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlashcardsApi.Controllers
 {
@@ -20,18 +21,18 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<CollectionDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<CollectionDto>>> GetAll(CancellationToken token)
         {
-            return Ok((await storage.GetAllCollections())
+            return Ok((await storage.GetAllCollections(token))
                 .Where(collection => User.OwnsResource(collection)));
         }
         
         [Authorize]
         [HttpPost("create")]
-        public async Task<ActionResult> AddCollection([FromBody] string name)
+        public async Task<ActionResult> AddCollection([FromBody] string name, CancellationToken token)
         {
             var newCollection = new Collection(name, User.Identity.Name);
-            await storage.AddCollection(newCollection);
+            await storage.AddCollection(newCollection, token);
 
             return CreatedAtRoute(
                 "GetCollectionById", new { id = newCollection.Id }, newCollection.Id);
@@ -39,9 +40,9 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCollectionById")]
-        public async Task<ActionResult> GetCollection(string id)
+        public async Task<ActionResult> GetCollection(string id, CancellationToken token)
         {
-            var collection = await storage.FindCollection(id);
+            var collection = await storage.FindCollection(id, token);
             if (collection == null)
                 return NotFound();
 
@@ -52,28 +53,28 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}/cards", Name = "GetCollectionCards")]
-        public async Task<ActionResult> GetCollectionCards(string id)
+        public async Task<ActionResult> GetCollectionCards(string id, CancellationToken token)
         {
-            var collection = await storage.FindCollection(id);
+            var collection = await storage.FindCollection(id, token);
             if (collection == null)
                 return NotFound();
 
             if (User.OwnsResource(collection))
-                return Ok(await storage.GetCollectionCards(id));
+                return Ok(await storage.GetCollectionCards(id, token));
             return Forbid();
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeleteCollection([FromBody] string id)
+        public async Task<ActionResult> DeleteCollection([FromBody] string id, CancellationToken token)
         {
-            var collection = await storage.FindCollection(id);
+            var collection = await storage.FindCollection(id, token);
             if (collection == null)
                 return NotFound();
 
             if (!User.OwnsResource(collection))
                 return Forbid();
 
-            await storage.DeleteCollection(id);
+            await storage.DeleteCollection(id, token);
             return Ok("Collection deleted");
         }
     }

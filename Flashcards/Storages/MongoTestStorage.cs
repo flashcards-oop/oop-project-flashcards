@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -15,19 +16,19 @@ namespace Flashcards
             client.StartSession();
         }
         
-        public async Task AddTest(Test test)
+        public async Task AddTest(Test test, CancellationToken token = default(CancellationToken))
         {
-            await tests.InsertOneAsync(test);
+            await tests.InsertOneAsync(test, cancellationToken:token);
         }
 
-        public async Task<Test> FindTest(string testId)
+        public async Task<Test> FindTest(string testId, CancellationToken token = default(CancellationToken))
         {
-            return await tests.Find(test => test.Id == testId).FirstOrDefaultAsync();
+            return await tests.Find(test => test.Id == testId).FirstOrDefaultAsync(cancellationToken: token);
         }
 
-        public async Task DeleteTest(string testId)
+        public async Task DeleteTest(string testId, CancellationToken token = default(CancellationToken))
         {
-            await tests.FindOneAndDeleteAsync(a => a.Id == testId);
+            await tests.FindOneAndDeleteAsync(a => a.Id == testId, cancellationToken: token);
         }
     }
 }
