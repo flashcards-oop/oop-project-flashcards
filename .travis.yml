@@ -5,5 +5,5 @@ mono: none
 before_script: 
   - dotnet restore
 script: 
-  - docker-compose up -d
+  - docker-compose -f docker-compose.dev.yaml up -d mongo
   - dotnet test ./FlashcardsTests -c Release -f netcoreapp2.1
