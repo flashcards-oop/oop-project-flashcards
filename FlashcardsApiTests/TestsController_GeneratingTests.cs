@@ -50,7 +50,7 @@ namespace FlashcardsApiTests
                     new TestBlockDto(generators[0].GetTypeCaption(), 1),
                     new TestBlockDto(generators[1].GetTypeCaption(), 2),
                     new TestBlockDto(generators[2].GetTypeCaption(), 3)
-                });
+                }, null);
 
             fakeStorage = A.Fake<IStorage>();
             fakeTestStorage = A.Fake<ITestStorage>();
@@ -63,7 +63,7 @@ namespace FlashcardsApiTests
             A.CallTo(() => fakeBuilder.WithGenerator(A<IExerciseGenerator>._, A<int>._)).Returns(fakeBuilder);
             A.CallTo(() => factory.GetBuilder(cards, A<ICardsSelector>._)).Returns(fakeBuilder);
 
-            controller = new TestsController(fakeStorage, fakeTestStorage, factory, generators);
+            controller = new TestsController(fakeStorage, fakeTestStorage, factory, generators, null);
             ControllerTestsHelper.AttachUserToControllerContext(controller, "admin");
         }
 

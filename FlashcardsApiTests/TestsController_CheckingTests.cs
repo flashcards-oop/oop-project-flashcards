@@ -27,33 +27,32 @@ namespace FlashcardsApiTests
         Test test;
         TestAnswersDto answersDto;
         
-        public TestsController_CheckingTests()
-        {
-            answer = new OpenAnswer("London");
-            question = new OpenAnswerQuestion("Capital of GB");
-            exercises = new Exercise[]
-            {
-                new Exercise("1", answer, question, new List<string>{"c1", "c2" })
-            };
-            test = new Test(exercises, "admin", "id");
-            answersDto = new TestAnswersDto()
-            {
-                Answers = 
-            };
+        //public TestsController_CheckingTests()
+        //{
+        //    answer = new OpenAnswer("London");
+        //    question = new OpenAnswerQuestion("Capital of GB");
+        //    exercises = new Exercise[]
+        //    {
+        //        new Exercise("1", answer, question, new List<string>{"c1", "c2" })
+        //    };
+        //    test = new Test(exercises, "admin", "id");
+        //    answersDto = new TestAnswersDto()
+        //    { 
+        //    };
 
-            fakeStorage = A.Fake<IStorage>();
-            fakeTestStorage = A.Fake<ITestStorage>();
-            A.CallTo(() => fakeTestStorage.FindTest("id", A<CancellationToken>._))
-                .Returns(test);
+        //    fakeStorage = A.Fake<IStorage>();
+        //    fakeTestStorage = A.Fake<ITestStorage>();
+        //    A.CallTo(() => fakeTestStorage.FindTest("id", A<CancellationToken>._))
+        //        .Returns(test);
 
-            controller = new TestsController(fakeStorage, fakeTestStorage, null, null);
-            ControllerTestsHelper.AttachUserToControllerContext(controller, "admin");
-        }
+        //    controller = new TestsController(fakeStorage, fakeTestStorage, null, null);
+        //    ControllerTestsHelper.AttachUserToControllerContext(controller, "admin");
+        //}
 
-        [Test]
-        public async Task CheckAnswers_Should()
-        {
-            controller.CheckAnswers()
-        }
+        //[Test]
+        //public async Task CheckAnswers_Should()
+        //{
+        //    controller.CheckAnswers()
+        //}
     }
 }

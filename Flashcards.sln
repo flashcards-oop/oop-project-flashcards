@@ -2,9 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flashcards", "Flashcards\Flashcards.csproj", "{7C1E49CC-54B0-4FBF-849B-F49382EDC53C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flashcards", "Flashcards\Flashcards.csproj", "{7C1E49CC-54B0-4FBF-849B-F49382EDC53C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlashcardsTests", "FlashcardsTests\FlashcardsTests.csproj", "{5A72BF87-2588-429B-AC79-8951BAA760C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsTests", "FlashcardsTests\FlashcardsTests.csproj", "{5A72BF87-2588-429B-AC79-8951BAA760C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlashcardsApi", "FlashcardsApi\FlashcardsApi.csproj", "{E8F953B0-F4E3-4318-AE08-FE80C9A113C3}"
 EndProject

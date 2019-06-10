@@ -18,15 +18,18 @@ namespace FlashcardsApi.Controllers
         private readonly ITestStorage testStorage;
         private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
         private readonly ITestBuilderFactory testBuilderFactory;
-
+        private readonly FilterGenerator filterGenerator;
+        
         public TestsController(IStorage storage, 
             ITestStorage testStorage,
             ITestBuilderFactory testBuilderFactory,
-            IEnumerable<IExerciseGenerator> generators)
+            IEnumerable<IExerciseGenerator> generators,
+            FilterGenerator filterGenerator)
         {
             this.storage = storage;
             this.testStorage = testStorage;
             this.testBuilderFactory = testBuilderFactory;
+            this.filterGenerator = filterGenerator;
 
             generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
             foreach (var generator in generators)
@@ -45,6 +48,11 @@ namespace FlashcardsApi.Controllers
                 return Forbid();
 
             var cards = await storage.GetCollectionCards(testQueryDto.CollectionId, token);
+            if (testQueryDto.Filter != null)
+            {
+                var filter = filterGenerator.GetFilter(testQueryDto.Filter);
+                cards = filter(cards).ToList();
+            }
 
             var testBuilder = testBuilderFactory.GetBuilder(cards, new RandomCardsSelector());
             foreach(var block in testQueryDto.Blocks)

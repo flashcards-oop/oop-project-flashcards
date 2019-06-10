@@ -29,7 +29,7 @@ namespace FlashcardsApiTests
             storage = A.Fake<IStorage>();
             testStorage = A.Fake<ITestStorage>();
             factory = A.Fake<ITestBuilderFactory>();
-            controller = new TestsController(storage, testStorage, factory, new IExerciseGenerator[0]);
+            controller = new TestsController(storage, testStorage, factory, new IExerciseGenerator[0], null);
             ControllerTestsHelper.AttachUserToControllerContext(controller, "admin");
         }
 
@@ -40,7 +40,7 @@ namespace FlashcardsApiTests
                 .Returns<Collection>(null);
 
             var result = await controller.GenerateTest(
-                new TestQueryDto("hello", new TestBlockDto[0].ToList()), default(CancellationToken));
+                new TestQueryDto("hello", new TestBlockDto[0].ToList(), null), default(CancellationToken));
             result.Result.Should().BeOfType<NotFoundResult>();
         }
 

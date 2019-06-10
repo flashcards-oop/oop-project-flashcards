@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Flashcards;
 using Flashcards.QuestionGenerators;
+using FlashcardsApi.Config;
+using FlashcardsApi.Mongo;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Newtonsoft.Json;
@@ -53,15 +55,21 @@ namespace FlashcardsApi
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
             services.AddMvc().AddJsonOptions(opt => opt.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto);
+
+            var config = new ServerConfig();
+            Configuration.Bind(config);
+            var context = new MongoContext(config.MongoDb);
             
-            services.AddSingleton<IStorage, MongoCardStorage>();
-	        services.AddSingleton<ITestStorage, MongoTestStorage>();
-            services.AddSingleton<IUserStorage, MongoUserStorage>();
+            services.AddSingleton<IStorage>(new MongoCardStorage(context));
+	        services.AddSingleton<ITestStorage>(new MongoTestStorage(context));
+            services.AddSingleton<IUserStorage>(new MongoUserStorage(context));
 
             services.AddSingleton<IExerciseGenerator, ChoiceQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, MatchingQuestionExerciseGenerator>();
             services.AddSingleton<IExerciseGenerator, OpenQuestionExerciseGenerator>();
             services.AddSingleton<TestBuilderFactory>();
+            services.AddSingleton<FilterGenerator>();
+            services.AddSingleton<IFilterConfigurator, AwarenessFilterConfigurator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

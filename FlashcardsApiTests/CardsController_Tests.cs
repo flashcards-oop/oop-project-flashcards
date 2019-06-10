@@ -37,7 +37,7 @@ namespace FlashcardsApiTests
         public void SetUp()
         {
             fakeStorage = A.Fake<IStorage>();
-            controller = new CardsController(fakeStorage);
+            controller = new CardsController(fakeStorage, null);
             ControllerTestsHelper.AttachUserToControllerContext(controller, "admin");
         }
 
