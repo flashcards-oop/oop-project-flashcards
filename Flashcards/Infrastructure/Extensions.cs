@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Flashcards
 {
     public static class Extensions
     {
-        private static readonly Random random = new Random();
+        private static readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random());
 
         public static void Shuffle<T>(this IList<T> list)
         {
@@ -13,7 +14,7 @@ namespace Flashcards
             while (count > 1)
             {
                 count--;
-                var k = random.Next(count + 1);
+                var k = random.Value.Next(count + 1);
                 var value = list[k];
                 list[k] = list[count];
                 list[count] = value;
