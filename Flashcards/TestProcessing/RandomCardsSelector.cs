@@ -10,6 +10,9 @@ namespace Flashcards
 
         public IEnumerable<List<Card>> GetCardBunches(List<Card> cards, IEnumerable<int> bunchSizes)
         {
+            if (cards.Count == 0)
+                yield break;
+
             foreach(var bunchSize in bunchSizes)
             {
                 var chosenCards = new List<Card>();

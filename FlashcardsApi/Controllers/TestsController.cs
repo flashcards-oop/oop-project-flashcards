@@ -48,11 +48,15 @@ namespace FlashcardsApi.Controllers
                 return Forbid();
 
             var cards = await storage.GetCollectionCards(testQueryDto.CollectionId, token);
+
             if (testQueryDto.Filter != null)
             {
                 var filter = filterGenerator.GetFilter(testQueryDto.Filter);
                 cards = filter(cards).ToList();
             }
+
+            if (cards.Count == 0)
+                return UnprocessableEntity("Not enough cards for test");
 
             var testBuilder = testBuilderFactory.GetBuilder(cards, new RandomCardsSelector());
             foreach(var block in testQueryDto.Blocks)
