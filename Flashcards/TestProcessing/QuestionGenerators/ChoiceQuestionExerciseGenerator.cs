@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Flashcards.QuestionGenerators
 {
     public class ChoiceQuestionExerciseGenerator : IExerciseGenerator
     {
-        private readonly Random random;
+        private static readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random());
 
         public ChoiceQuestionExerciseGenerator(int amountOfChoices = 4)
         {
-            random = new Random();
             RequiredAmountOfCards = amountOfChoices;
         }
 
@@ -26,7 +26,7 @@ namespace Flashcards.QuestionGenerators
             if (cards.Count != RequiredAmountOfCards)
                 throw new ArgumentException("Invalid amount of cards");
 
-            var targetCard = cards[random.Next(RequiredAmountOfCards)];
+            var targetCard = cards[random.Value.Next(RequiredAmountOfCards)];
             var choices = cards.Select(card => card.Term).ToList();
             choices.Shuffle();
 

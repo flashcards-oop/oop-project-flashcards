@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Threading;
+using Flashcards.TestProcessing;
 
 namespace FlashcardsApi.Controllers
 {   
@@ -16,13 +17,19 @@ namespace FlashcardsApi.Controllers
         private readonly IStorage storage;
         private readonly ITestStorage testStorage;
         private readonly Dictionary<string, IExerciseGenerator> generatorsByCaption;
-
+        private readonly ITestBuilderFactory testBuilderFactory;
+        private readonly FilterGenerator filterGenerator;
+        
         public TestsController(IStorage storage, 
             ITestStorage testStorage,
-            IEnumerable<IExerciseGenerator> generators)
+            ITestBuilderFactory testBuilderFactory,
+            IEnumerable<IExerciseGenerator> generators,
+            FilterGenerator filterGenerator)
         {
             this.storage = storage;
             this.testStorage = testStorage;
+            this.testBuilderFactory = testBuilderFactory;
+            this.filterGenerator = filterGenerator;
 
             generatorsByCaption = new Dictionary<string, IExerciseGenerator>();
             foreach (var generator in generators)
@@ -35,21 +42,24 @@ namespace FlashcardsApi.Controllers
         {
             var collection = await storage.FindCollection(testQueryDto.CollectionId, token);
             if (collection is null)
-            {
                 return NotFound();
-            }
-
+            
             if (!User.OwnsResource(collection))
                 return Forbid();
 
             var cards = await storage.GetCollectionCards(testQueryDto.CollectionId, token);
+            if (testQueryDto.Filter != null)
+            {
+                var filter = filterGenerator.GetFilter(testQueryDto.Filter);
+                cards = filter(cards).ToList();
+            }
 
-            var testBuilder = new TestBuilder(cards, new RandomCardsSelector());
+            var testBuilder = testBuilderFactory.GetBuilder(cards, new RandomCardsSelector());
             foreach(var block in testQueryDto.Blocks)
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
-            var exercises = testBuilder.Build().ToList();
+            var exercises = testBuilder.Build();
             var test = new Test(exercises, User.Identity.Name);
             await testStorage.AddTest(test, token);
 

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Flashcards.TestProcessing;
 
 namespace Flashcards
 {
-    public class TestBuilder
+    public class TestBuilder : ITestBuilder
     {
         private readonly List<Card> cards;
 
@@ -18,7 +19,7 @@ namespace Flashcards
             this.selector = selector;
         }
 
-        public TestBuilder WithGenerator(IExerciseGenerator generator, int amountOfQuestions)
+        public ITestBuilder WithGenerator(IExerciseGenerator generator, int amountOfQuestions)
         {
             generationSettings.Add((generator, amountOfQuestions));
             return this;

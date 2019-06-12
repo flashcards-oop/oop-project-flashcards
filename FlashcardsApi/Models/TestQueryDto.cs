@@ -18,11 +18,13 @@ namespace FlashcardsApi.Models
     {
         public string CollectionId { get; }
         public readonly List<TestBlockDto> Blocks;
-        
-        public TestQueryDto(string collectionId, List<TestBlockDto> blocks)
+        public FilterDto Filter;
+
+        public TestQueryDto(string collectionId, List<TestBlockDto> blocks, FilterDto filter)
         {
             CollectionId = collectionId;
             Blocks = blocks;
+            Filter = filter;
         }
     }
 }
