@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Flashcards;
+using FlashcardsClient.Infrastructure;
 
 namespace FlashcardsClient
 {
@@ -46,9 +47,7 @@ namespace FlashcardsClient
 
         public List<Collection> GetCollections()
         {
-            var collections = flashcardsClient.LastReceivedCollections == null
-                ? flashcardsClient.GetAllCollections()
-                : flashcardsClient.LastReceivedCollections;
+            var collections = flashcardsClient.GetAllCollections() ?? flashcardsClient.LastReceivedCollections;
             Console.WriteLine("This is your collections");
             for (var i = 0; i < collections.Count; i++)
                 Console.WriteLine($"{i}) {collections[i].Name}");
@@ -57,9 +56,7 @@ namespace FlashcardsClient
 
         public List<Card> GetCards()
         {
-            var cards = flashcardsClient.LastReceivedCards == null
-                ? flashcardsClient.GetAllCards()
-                : flashcardsClient.LastReceivedCards;
+            var cards = flashcardsClient.GetAllCards() ?? flashcardsClient.LastReceivedCards;
             Console.WriteLine("This is your cards");
             for (var i = 0; i < cards.Count; i++)
                 Console.WriteLine($"{i}) {cards[i].Term} — {cards[i].Definition}");
@@ -104,6 +101,66 @@ namespace FlashcardsClient
             flashcardsClient.DeleteCard(number);
         }
 
+        public void GenerateTest()
+        {
+            var collections = GetCollections();
+            if (collections.Count != 0)
+            {
+                Console.WriteLine("From which collection do you want create a test?");
+                Console.WriteLine("Enter the number of collection");
+                var collectionNumber = int.Parse(Console.ReadLine());
+                var cardsCount = flashcardsClient.GetCollectionCards(collectionNumber).Count;
+                if (cardsCount != 0)
+                {
+                    Console.WriteLine(
+                        "Here you can choose how much questioons of each type you need. You also can choose 0 if you don't want one of types");
+                    Console.WriteLine("Enter the number of choice question");
+                    var choiceNumber = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter the number of matching question");
+                    var matchingNumber = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter the number of open answer question");
+                    var openNumber = int.Parse(Console.ReadLine());
+                    var request = new List<QuestionRequest>();
+                    if (choiceNumber > 0)
+                        request.Add(new QuestionRequest { Type = "choice", Amount = choiceNumber });
+                    if (matchingNumber > 0)
+                        request.Add(new QuestionRequest { Type = "matching", Amount = matchingNumber });
+                    if (openNumber > 0)
+                        request.Add(new QuestionRequest { Type = "open", Amount = openNumber });
+                    flashcardsClient.GenerateTest(collectionNumber, request);
+                }
+                else
+                {
+                    Console.WriteLine("Whoops! You don't have any cards in this collection. How about adding new one by command -ac");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Whoops! You don't have any collections. How about creating new one by command -cc");
+            }
+        }
+
+        public TestAnswers GetTestAnswers()
+        {
+            if (flashcardsClient.LastRecievedTest == null)
+            {
+                Console.WriteLine("You had not request for a test. Do it by command -test");
+                return null;
+            }
+            var testAnswers = new List<ExerciseAnswer>();
+            foreach (var exercise in flashcardsClient.LastRecievedTest.Exercises)
+                testAnswers.Add(ExerciseHandler.Handle(exercise));
+            return new TestAnswers { TestId = flashcardsClient.LastRecievedTest.TestId, Answers = testAnswers };
+        }
+
+        public void CheckTestAnswers()
+        {
+            var testAnswers = GetTestAnswers();
+            if (testAnswers == null)
+                return;
+            flashcardsClient.CheckAnswers(testAnswers);
+        }
+
         public void Run()
         {
             var isRunning = true;
@@ -143,6 +200,12 @@ namespace FlashcardsClient
                         break;
                     case "-off":
                         isRunning = false;
+                        break;
+                    case "-test":
+                        GenerateTest();
+                        break;
+                    case "-check":
+                        CheckTestAnswers();
                         break;
                     default:
                         Console.WriteLine("Unrecognized command. Please try again or use -h for help");

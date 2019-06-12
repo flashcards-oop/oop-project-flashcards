@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using RestSharp;
 using Flashcards;
+using FlashcardsClient.Infrastructure;
+using RestSharp.Serializers.Newtonsoft.Json;
+using RestRequest = RestSharp.RestRequest;
+
+//using RestSharp.Serializers.Newtonsoft.Json;
 
 namespace FlashcardsClient
 {
@@ -12,6 +17,24 @@ namespace FlashcardsClient
         private readonly string token;
         public List<Card> LastReceivedCards;
         public List<Collection> LastReceivedCollections;
+        public RequestedTest LastRecievedTest;
+
+        private Dictionary<Type, string> answersChecking = new Dictionary<Type, string>
+        {
+            [typeof(ChoiceQuestion)] = "Flashcards.ChoiceAnswer, Flashcards",
+            [typeof(MatchingQuestion)] = "Flashcards.MatchingAnswer, Flashcards",
+            [typeof(OpenAnswerQuestion)] = "Flashcards.OpenAnswer, Flashcards"
+        };
+
+        public FlashcardsClient(string name)
+        {
+            client = new RestClient("http://localhost:5000");
+            AddUser(name);
+            token = GetToken(name);
+            LastReceivedCards = null;
+            LastReceivedCollections = null;
+            LastRecievedTest = null;
+        }
 
         public void AddUser(string userName)
         {
@@ -29,20 +52,11 @@ namespace FlashcardsClient
             return JsonConvert.DeserializeObject<Dictionary<string, string>>(response)["access_token"];
         }
 
-        public FlashcardsClient(string name)
-        {
-            client = new RestClient("http://localhost:5000");
-            AddUser(name);
-            token = GetToken(name);
-            LastReceivedCards = null;
-            LastReceivedCollections = null;
-        }
-
         public void CreateCollection(string collectionName)
         {
             var request = new RestRequest("api/collections/create");
             request.AddJsonBody(collectionName);
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             var response = client.Post(request);
             Console.WriteLine(response.Content);
         }
@@ -50,7 +64,7 @@ namespace FlashcardsClient
         public List<Collection> GetAllCollections()
         {
             var request = new RestRequest("api/collections/all");
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             var response = client.Get(request).Content;
             var parsedResponse = JsonConvert.DeserializeObject<List<Collection>>(response);
             LastReceivedCollections = new List<Collection>();
@@ -61,7 +75,7 @@ namespace FlashcardsClient
         public Collection GetCollectionById(string id)
         {
             var request = new RestRequest($"api/collections/{id}");
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             var response = client.Get(request).Content;
             var parsedResponse = JsonConvert.DeserializeObject<Collection>(response);
             return parsedResponse;
@@ -70,8 +84,8 @@ namespace FlashcardsClient
         public void AddCardToCollection(Card card)
         {
             var request = new RestRequest("api/cards/create");
-            request.AddHeader("Authorization", $"Bearer {token}");
-            request.AddHeader("Content-Type", "application/json");
+            request.AddAuthorization(token);
+            request.AddJsonApp();
             var body = new Dictionary<string, string>
             {
                 ["collectionId"] = card.CollectionId,
@@ -92,8 +106,8 @@ namespace FlashcardsClient
                 DeleteCard(i);
             }
             var request = new RestRequest("api/collections/delete");
-            request.AddHeader("Authorization", $"Bearer {token}");
-            request.AddHeader("Content-Type", "application/json");
+            request.AddAuthorization(token);
+            request.AddJsonApp();
             request.AddJsonBody(id);
             var response = client.Delete(request).Content;
             Console.WriteLine(response);
@@ -103,8 +117,9 @@ namespace FlashcardsClient
         public List<Card> GetAllCards()
         {
             var request = new RestRequest("api/cards/all");
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             var response = client.Get(request).Content;
+            Console.WriteLine(response);
             var parsedResponse = JsonConvert.DeserializeObject<List<Card>>(response);
             LastReceivedCards = new List<Card>();
             LastReceivedCards.AddRange(parsedResponse);
@@ -115,7 +130,7 @@ namespace FlashcardsClient
         {
             var id = LastReceivedCollections[number].Id;
             var request = new RestRequest($"api/collections/{id}/cards");
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             var response = client.Get(request).Content;
             var parsedResponse = JsonConvert.DeserializeObject<List<Card>>(response);
             LastReceivedCards = new List<Card>();
@@ -126,8 +141,8 @@ namespace FlashcardsClient
         public Card GetCardById(string id)
         {
             var request = new RestRequest($"api/cards/{id}");
-            request.AddHeader("Authorization", $"Bearer {token}");
-            request.AddHeader("Content-Type", "application/json");
+            request.AddAuthorization(token);
+            request.AddJsonApp();
             var response = client.Get(request).Content;
             var parsedResponse = JsonConvert.DeserializeObject<Card>(response);
             return parsedResponse;
@@ -137,11 +152,41 @@ namespace FlashcardsClient
         {
             var id = LastReceivedCards[number].Id;
             var request = new RestRequest("api/cards/delete");
-            request.AddHeader("Authorization", $"Bearer {token}");
+            request.AddAuthorization(token);
             request.AddJsonBody(id);
             var response = client.Delete(request).Content;
             Console.WriteLine(response);
             GetAllCards();
+        }
+
+        public void GenerateTest(int number, List<QuestionRequest> userRequests)
+        {
+            var id = LastReceivedCollections[number].Id;
+            var request = new RestRequest("api/tests/generate");
+            request.AddAuthorization(token);
+            request.AddJsonApp();
+            var body = new TestRequest
+            {
+                CollectionId = id,
+                Blocks = userRequests
+            };
+            request.AddJsonBody(body);
+            var response = client.Post(request).Content;
+            var parsedResponse = JsonConvert.DeserializeObject<RequestedTest>(response, new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Auto});
+            //Console.WriteLine(response);
+            LastRecievedTest = parsedResponse;
+        }
+
+        public void CheckAnswers(TestAnswers solution)
+        {
+            var request = new RestRequest("api/tests/check");
+            request.JsonSerializer = new NewtonsoftJsonSerializer();
+            request.AddAuthorization(token);
+            request.AddJsonApp();
+            request.AddJsonBody(solution);
+            Console.WriteLine(request.ToString());
+            var response = client.Post(request).Content;
+            Console.WriteLine(response);
         }
     }
 }

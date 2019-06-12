@@ -24,7 +24,6 @@ namespace FlashcardsApi.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<Card>>> GetAll(CancellationToken token)
         {
-            await Task.Delay(20000, token);
             return Ok((await storage.GetAllCards(token)).Where(card => User.OwnsResource(card)));
         }
 
