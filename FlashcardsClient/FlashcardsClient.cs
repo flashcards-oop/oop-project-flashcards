@@ -30,8 +30,7 @@ namespace FlashcardsClient
         {
             var request = new RestRequest("api/users/create");
             request.AddJsonBody(userName);
-            var response = client.Post(request);
-            Console.WriteLine(response.Content);
+            client.Post(request);
         }
 
         private string GetToken(string userName)
@@ -47,8 +46,7 @@ namespace FlashcardsClient
             var request = new RestRequest("api/collections/create");
             request.AddJsonBody(collectionName);
             request.AddAuthorization(token);
-            var response = client.Post(request);
-            Console.WriteLine(response.Content);
+            client.Post(request);
         }
 
         public List<Collection> GetAllCollections()
@@ -83,8 +81,7 @@ namespace FlashcardsClient
                 ["definition"] = card.Definition
             };
             request.AddJsonBody(body);
-            var response = client.Post(request).Content;
-            Console.WriteLine(response);
+            client.Post(request);
         }
 
         public void DeleteCollection(int number)
@@ -99,8 +96,7 @@ namespace FlashcardsClient
             request.AddAuthorization(token);
             request.AddJsonApp();
             request.AddJsonBody(id);
-            var response = client.Delete(request).Content;
-            Console.WriteLine(response);
+            client.Delete(request);
             GetAllCollections();
         }
 
@@ -109,7 +105,6 @@ namespace FlashcardsClient
             var request = new RestRequest("api/cards/all");
             request.AddAuthorization(token);
             var response = client.Get(request).Content;
-            Console.WriteLine(response);
             var parsedResponse = JsonConvert.DeserializeObject<List<Card>>(response);
             LastReceivedCards = new List<Card>();
             LastReceivedCards.AddRange(parsedResponse);
@@ -144,8 +139,7 @@ namespace FlashcardsClient
             var request = new RestRequest("api/cards/delete");
             request.AddAuthorization(token);
             request.AddJsonBody(id);
-            var response = client.Delete(request).Content;
-            Console.WriteLine(response);
+            client.Delete(request);
             GetAllCards();
         }
 

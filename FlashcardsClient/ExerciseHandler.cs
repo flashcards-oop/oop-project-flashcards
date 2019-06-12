@@ -33,7 +33,7 @@ namespace FlashcardsClient
                     typeof(MatchingQuestion), (e) =>
                     {
                         var question = (MatchingQuestion) e.Question;
-                        Console.WriteLine("");
+                        Console.WriteLine("Here you can see terms and definitions in two columns. Match them");
                         for (var i = 0; i < question.Terms.Length; i++)
                             Console.WriteLine($"{i}) {question.Terms[i]}    {i}) {question.Definitions[i]}");
                         var answer = new Dictionary<string, string>();
@@ -49,9 +49,42 @@ namespace FlashcardsClient
                 }
             };
 
+        private static readonly Dictionary<Type, Action<ExerciseQuestion, CheckedAnswer>> checkedAnswersHandler =
+            new Dictionary<Type, Action<ExerciseQuestion, CheckedAnswer>>
+            {
+                {
+                    typeof(OpenAnswer), (e, c) =>
+                    {
+                        Console.WriteLine("Open answer question");
+                        Console.WriteLine($"{((OpenAnswerQuestion) e.Question).Definition} — {((OpenAnswer)c.CorrectAnswer).Answer}");
+                    }
+                },
+                {
+                    typeof(ChoiceAnswer), (e, c) =>
+                    {
+                        Console.WriteLine("Choice question");
+                        Console.WriteLine($"{((ChoiceQuestion) e.Question).Definition} — {((ChoiceAnswer)c.CorrectAnswer).Answer}");
+                    }
+                },
+                {
+                    typeof(MatchingAnswer), (e, c) =>
+                    {
+                        Console.WriteLine("Matching question");
+                        var matchings = ((MatchingAnswer) c.CorrectAnswer).Matches;
+                        foreach (var matching in matchings.Keys)
+                            Console.WriteLine($"{matching} — {matchings[matching]}");
+                    }
+                }
+            };
+
         public static ExerciseAnswer HandleQuestion(ExerciseQuestion question)
         {
             return questionHandler[question.Question.GetType()](question);
+        }
+
+        public static void ShowCorrectAnswers(ExerciseQuestion question, CheckedAnswer answer)
+        {
+            checkedAnswersHandler[answer.CorrectAnswer.GetType()](question, answer);
         }
     }
 }
