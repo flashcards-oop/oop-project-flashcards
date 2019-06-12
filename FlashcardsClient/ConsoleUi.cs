@@ -149,7 +149,7 @@ namespace FlashcardsClient
             }
             var testAnswers = new List<ExerciseAnswer>();
             foreach (var exercise in flashcardsClient.LastRecievedTest.Exercises)
-                testAnswers.Add(ExerciseHandler.Handle(exercise));
+                testAnswers.Add(ExerciseHandler.HandleQuestion(exercise));
             return new TestAnswers { TestId = flashcardsClient.LastRecievedTest.TestId, Answers = testAnswers };
         }
 
@@ -158,7 +158,18 @@ namespace FlashcardsClient
             var testAnswers = GetTestAnswers();
             if (testAnswers == null)
                 return;
-            flashcardsClient.CheckAnswers(testAnswers);
+            var chechedTest = flashcardsClient.GetCheckedTest(testAnswers);
+            if (chechedTest.WrongAnswersCount == 0)
+            {
+                Console.WriteLine($"Correct answers: {chechedTest.CorrectAnswersCount}/{chechedTest.CheckedAnswers.Count}");
+                Console.WriteLine("Well done! You solved test correctly!");
+            }
+            else
+            {
+                Console.WriteLine($"Correct answers: {chechedTest.CorrectAnswersCount}/{chechedTest.CheckedAnswers.Count}");
+                Console.WriteLine($"Wrong answers: {chechedTest.WrongAnswersCount}/{chechedTest.CheckedAnswers.Count}");
+
+            }
         }
 
         public void Run()

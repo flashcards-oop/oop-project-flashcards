@@ -4,10 +4,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using Flashcards;
 using FlashcardsClient.Infrastructure;
-using RestSharp.Serializers.Newtonsoft.Json;
-using RestRequest = RestSharp.RestRequest;
 
-//using RestSharp.Serializers.Newtonsoft.Json;
 
 namespace FlashcardsClient
 {
@@ -18,13 +15,6 @@ namespace FlashcardsClient
         public List<Card> LastReceivedCards;
         public List<Collection> LastReceivedCollections;
         public RequestedTest LastRecievedTest;
-
-        private Dictionary<Type, string> answersChecking = new Dictionary<Type, string>
-        {
-            [typeof(ChoiceQuestion)] = "Flashcards.ChoiceAnswer, Flashcards",
-            [typeof(MatchingQuestion)] = "Flashcards.MatchingAnswer, Flashcards",
-            [typeof(OpenAnswerQuestion)] = "Flashcards.OpenAnswer, Flashcards"
-        };
 
         public FlashcardsClient(string name)
         {
@@ -172,21 +162,20 @@ namespace FlashcardsClient
             };
             request.AddJsonBody(body);
             var response = client.Post(request).Content;
-            var parsedResponse = JsonConvert.DeserializeObject<RequestedTest>(response, new JsonSerializerSettings{TypeNameHandling = TypeNameHandling.Auto});
-            //Console.WriteLine(response);
+            var parsedResponse = JsonConvert.DeserializeObject<RequestedTest>(response, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             LastRecievedTest = parsedResponse;
         }
 
-        public void CheckAnswers(TestAnswers solution)
+        public CheckedTest GetCheckedTest(TestAnswers solution)
         {
             var request = new RestRequest("api/tests/check");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
             request.AddAuthorization(token);
             request.AddJsonApp();
-            request.AddJsonBody(solution);
-            Console.WriteLine(request.ToString());
+            request.AddJsonBody(JsonConvert.SerializeObject(solution,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
             var response = client.Post(request).Content;
-            Console.WriteLine(response);
+            var parsedResponse = JsonConvert.DeserializeObject<CheckedTest>(response, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            return parsedResponse;
         }
     }
 }

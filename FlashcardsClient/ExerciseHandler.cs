@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Flashcards;
-using FlashcardsClient.Infrastructure;
 
 namespace FlashcardsClient
 {
     public static class ExerciseHandler
     {
-        private static readonly Dictionary<Type, Func<ExerciseQuestion, ExerciseAnswer>> exercises =
+        private static readonly Dictionary<Type, Func<ExerciseQuestion, ExerciseAnswer>> questionHandler =
             new Dictionary<Type, Func<ExerciseQuestion, ExerciseAnswer>>
             {
                 {
@@ -50,9 +49,9 @@ namespace FlashcardsClient
                 }
             };
 
-        public static ExerciseAnswer Handle(ExerciseQuestion question)
+        public static ExerciseAnswer HandleQuestion(ExerciseQuestion question)
         {
-            return exercises[question.Question.GetType()](question);
+            return questionHandler[question.Question.GetType()](question);
         }
     }
 }
