@@ -59,7 +59,7 @@ namespace FlashcardsApi.Controllers
                 if (generatorsByCaption.ContainsKey(block.Type))
                     testBuilder = testBuilder.WithGenerator(generatorsByCaption[block.Type], block.Amount);
 
-            var exercises = testBuilder.Build();
+            var exercises = testBuilder.Build().ToList();
             var test = new Test(exercises, User.Identity.Name);
             await testStorage.AddTest(test, token);
 
