@@ -11,10 +11,10 @@ namespace Flashcards
         public string OwnerLogin { get; }
 
         [BsonElement]
-        public readonly IEnumerable<Exercise> Exercises;
+        public readonly List<Exercise> Exercises;
 
         [BsonConstructor]
-        public Test(IEnumerable<Exercise> exercises, string ownerLogin, string id = null)
+        public Test(List<Exercise> exercises, string ownerLogin, string id = null)
         {
             Id = id ?? GuidGenerator.GenerateGuid();
             Exercises = exercises;
