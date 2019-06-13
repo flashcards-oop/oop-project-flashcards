@@ -7,3 +7,4 @@ before_script:
 script: 
   - docker-compose -f docker-compose.dev.yaml up -d mongo
   - dotnet test ./FlashcardsTests -c Release -f netcoreapp2.1
+  - dotnet test ./FlashcardsApiTests -c Release -f netcoreapp2.1
