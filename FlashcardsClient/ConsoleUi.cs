@@ -14,8 +14,10 @@ namespace FlashcardsClient
         public ConsoleUi(List<ConsoleCommand> commands)
         {
             this.commands = commands;
+            Console.WriteLine("Input server address");
+            var url = Console.ReadLine();
             Console.WriteLine("Hello! Input your name please");
-            ChangeUser();
+            ChangeUser(url);
         }
 
         private void Help()
@@ -27,10 +29,10 @@ namespace FlashcardsClient
             Console.WriteLine("-off Turns off the application");
         }
 
-        private void ChangeUser()
+        private void ChangeUser(string url)
         {
             userName = Console.ReadLine();
-            flashcardsClient = new FlashcardsClient(userName);
+            flashcardsClient = new FlashcardsClient(userName, url);
             Console.WriteLine($"Welcome, {userName}! Let's start! All commands you can find by -h");
         }
 

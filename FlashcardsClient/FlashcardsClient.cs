@@ -18,9 +18,9 @@ namespace FlashcardsClient
         private static readonly JsonSerializerSettings SerializerSettings = 
             new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
 
-        public FlashcardsClient(string name)
+        public FlashcardsClient(string name, string url)
         {
-            client = new RestClient("http://localhost:5000");
+            client = new RestClient(url);
             AddUser(name);
             token = GetToken(name);
             LastReceivedCards = null;
