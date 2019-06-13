@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Flashcards.TestProcessing;
 
-namespace Flashcards
+namespace Flashcards.TestProcessing
 {
     public class TestBuilder : ITestBuilder
     {

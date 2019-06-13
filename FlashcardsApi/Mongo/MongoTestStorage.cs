@@ -1,6 +1,8 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Flashcards;
+using Flashcards.Storages;
 using MongoDB.Driver;
 
 namespace FlashcardsApi.Mongo
@@ -19,12 +21,12 @@ namespace FlashcardsApi.Mongo
             await context.Tests.InsertOneAsync(test, cancellationToken:token);
         }
 
-        public async Task<Test> FindTest(string testId, CancellationToken token = default(CancellationToken))
+        public async Task<Test> FindTest(Guid testId, CancellationToken token = default(CancellationToken))
         {
             return await context.Tests.Find(test => test.Id == testId).FirstOrDefaultAsync(token);
         }
 
-        public async Task DeleteTest(string testId, CancellationToken token = default(CancellationToken))
+        public async Task DeleteTest(Guid testId, CancellationToken token = default(CancellationToken))
         {
             await context.Tests.FindOneAndDeleteAsync(a => a.Id == testId, cancellationToken: token);
         }

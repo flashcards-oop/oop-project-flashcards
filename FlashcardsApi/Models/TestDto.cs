@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Flashcards;
@@ -6,7 +7,7 @@ namespace FlashcardsApi.Models
 {
     public class TestDto
     {
-        public string TestId { get; }
+        public Guid TestId { get; }
         public List<ExerciseDto> Exercises { get; }
 
         public TestDto(Test test)

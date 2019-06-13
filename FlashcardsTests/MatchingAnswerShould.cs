@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Flashcards;
+using Flashcards.Answers;
 using NUnit.Framework;
 
 namespace FlashcardsTests

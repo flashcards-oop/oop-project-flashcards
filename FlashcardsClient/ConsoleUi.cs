@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FlashcardsClient.ConsoleCommands;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace FlashcardsClient
 {

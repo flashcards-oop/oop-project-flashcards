@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Flashcards;
+using Flashcards.Answers;
+using Flashcards.Questions;
 
 namespace FlashcardsClient
 {

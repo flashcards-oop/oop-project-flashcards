@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Flashcards;
-using Flashcards.QuestionGenerators;
+using Flashcards.Answers;
+using Flashcards.Questions;
+using Flashcards.TestProcessing;
+using Flashcards.TestProcessing.QuestionGenerators;
 
 
 namespace FlashcardsTests
@@ -10,17 +14,19 @@ namespace FlashcardsTests
     [TestFixture]
     public class TestGenerationTests
     {
-        List<Card> cards = new List<Card>
+        private static readonly Guid Id = Guid.NewGuid();
+        
+        private readonly List<Card> cards = new List<Card>
             {
-                new Card("t1", "d1", "0", "a"),
-                new Card("t2", "d2", "0", "a")
+                new Card("t1", "d1", "0", Id),
+                new Card("t2", "d2", "0", Id)
             };
         
         private readonly List<Card> testCards = new List<Card>
         {
-            new Card("1", "London", "is the capital of Great Britain", "a"),
-            new Card("666", "Moscow", "is the capital of Russian Federation", "a"),
-            new Card("13", "Mama", "Romama", "a")
+            new Card("1", "London", "is the capital of Great Britain", Id),
+            new Card("666", "Moscow", "is the capital of Russian Federation", Id),
+            new Card("13", "Mama", "Romama", Id)
         };
         
         [Test]
@@ -63,7 +69,7 @@ namespace FlashcardsTests
         public void OpenQuestionExerciseGenerator_ShouldGenerateValidExercise()
         {
             var generator = new OpenQuestionExerciseGenerator();
-            var card = new Card("term", "definition", "0", "a");
+            var card = new Card("term", "definition", "0", Id);
             var exercise = generator.GenerateExerciseFrom(new List<Card> { card });
 
             Assert.IsInstanceOf<OpenAnswer>(exercise.Answer);

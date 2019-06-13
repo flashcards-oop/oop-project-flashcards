@@ -1,19 +1,30 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+
+// ReSharper disable All
 
 namespace Flashcards
 {
     public class User
     {
-        [BsonElement]
-        public string Id { get; set; }
+        [BsonId]
+        public Guid Id { get; set; }
         [BsonElement]
         public string Login { get; set; }
         
         [BsonConstructor]
-        public User(string login, string id = null)
+        [JsonConstructor]
+        public User(string login, Guid id)
         {
             Login = login;
-            Id = id ?? GuidGenerator.GenerateGuid();
+            Id = id;
+        }
+        
+        public User(string login)
+        {
+            Login = login;
+            Id = Guid.NewGuid();
         }
     }
 }

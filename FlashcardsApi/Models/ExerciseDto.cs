@@ -1,13 +1,14 @@
-using Flashcards;
+using System;
+using Flashcards.Questions;
 
 namespace FlashcardsApi.Models
 {
     public class ExerciseDto
     {
-        public string Id { get; }
+        public Guid Id { get; }
         public IQuestion Question { get; }
 
-        public ExerciseDto(string id, IQuestion question)
+        public ExerciseDto(Guid id, IQuestion question)
         {
             Id = id;
             Question = question;

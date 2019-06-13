@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Threading;
+using Flashcards.Storages;
 
 namespace FlashcardsApi.Controllers
 {
@@ -43,7 +45,7 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCardById")]
-        public async Task<ActionResult<Card>> GetById([FromRoute] string id, CancellationToken token)
+        public async Task<ActionResult<Card>> GetById([FromRoute] Guid id, CancellationToken token)
         {
             var card = await storage.FindCard(id, token);
             if (card == null)
@@ -72,7 +74,7 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeleteCard([FromBody] string id, CancellationToken token)
+        public async Task<ActionResult> DeleteCard([FromBody] Guid id, CancellationToken token)
         {
             var card = await storage.FindCard(id, token);
             if (card == null)

@@ -8,9 +8,9 @@ namespace FlashcardsApi
 {
     public class FilterGenerator
     {
-        List<IFilterConfigurator> configurators;
+        private readonly List<IFilterConfigurator> configurators;
 
-        Dictionary<string, Func<IComparable, IComparable, bool>> availableOptions = 
+        private readonly Dictionary<string, Func<IComparable, IComparable, bool>> availableOptions = 
             new Dictionary<string, Func<IComparable, IComparable, bool>>
         {
             { "min", (min, val) => min.CompareTo(val) <= 0 },
@@ -25,7 +25,7 @@ namespace FlashcardsApi
 
         public Func<IEnumerable<Card>, IEnumerable<Card>> GetFilter(FilterDto filterDto)
         {
-            var configurator = configurators.Where(c => c.GetName() == filterDto.Name).FirstOrDefault();
+            var configurator = configurators.FirstOrDefault(c => c.GetName() == filterDto.Name);
             if (configurator == null)
                 return cards => cards;
 
@@ -33,7 +33,8 @@ namespace FlashcardsApi
             return cards => cards.Where(card => subFilters.Select(subFilter => subFilter(card)).All(res => res));
         }
 
-        private List<Func<Card, bool>> ExtractSubfilters(IFilterConfigurator configurator, Dictionary<string, object> filterOptions)
+        private List<Func<Card, bool>> ExtractSubfilters(IFilterConfigurator configurator, 
+            Dictionary<string, object> filterOptions)
         {
             var subFilters = new List<Func<Card, bool>>();
 

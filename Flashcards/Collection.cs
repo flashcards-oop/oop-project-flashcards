@@ -1,19 +1,33 @@
+using System;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable All
 
 namespace Flashcards
 {
     public class Collection : IOwnedResource
     {
-        public string Id { get; }
+        [BsonId]
+        public Guid Id { get; set; }
         [BsonElement]
         public string Name { get; }
         [BsonElement]
         public string OwnerLogin { get; }
         
         [BsonConstructor]
-        public Collection(string name, string ownerLogin, string id = null)
+        [JsonConstructor]
+        public Collection(string name, string ownerLogin, Guid id)
         {
-            Id = id ?? GuidGenerator.GenerateGuid();
+            Id = id;
+            Name = name;
+            OwnerLogin = ownerLogin;
+        }
+        
+        public Collection(string name, string ownerLogin)
+        {
+            Id = Guid.NewGuid();
             Name = name;
             OwnerLogin = ownerLogin;
         }

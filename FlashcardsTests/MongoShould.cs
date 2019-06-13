@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Flashcards;
@@ -33,7 +34,7 @@ namespace FlashcardsTests
         [Test]
         public async Task InsertCards()
         {
-            var card = new Card("Solomon is a", "human", "0", "a");
+            var card = new Card("Solomon is a", "human", "0", Guid.NewGuid());
             await mongo.AddCard(card);
 
             var insertedCard = await mongo.FindCard(card.Id);
@@ -46,7 +47,7 @@ namespace FlashcardsTests
         [Test]
         public async Task DeleteCard()
         {
-            var card = new Card("Solomon is a", "human", "0", "a");
+            var card = new Card("Solomon is a", "human", "0", Guid.NewGuid());
             await mongo.AddCard(card);
             await mongo.DeleteCard(card.Id);
             Assert.IsNull(await mongo.FindCard(card.Id));
@@ -55,9 +56,9 @@ namespace FlashcardsTests
         [Test]
         public async Task ReturnListOfCards()
         {
-            var card1 = new Card("Solomon is a", "human", "0", "a");
-            var card2 = new Card("Programmer is", "human", "0", "a");
-            var card3 = new Card("Programmer is", "god", "0", "a");
+            var card1 = new Card("Solomon is a", "human", "0", Guid.NewGuid());
+            var card2 = new Card("Programmer is", "human", "0", Guid.NewGuid());
+            var card3 = new Card("Programmer is", "god", "0", Guid.NewGuid());
             
             await mongo.AddCard(card1);
             await mongo.AddCard(card2);

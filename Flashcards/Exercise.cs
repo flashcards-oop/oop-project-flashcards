@@ -1,21 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Flashcards.Answers;
+using Flashcards.Questions;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+
+// ReSharper disable All
 
 namespace Flashcards
 {
     public class Exercise
     {
         [BsonId]
-        public string Id { get; }
+        public Guid Id { get; set; }
         [BsonElement]
         public readonly IAnswer Answer;
         [BsonElement]
         public readonly IQuestion Question;
         [BsonElement]
-        public readonly List<string> UsedCardsIds;
+        public readonly List<Guid> UsedCardsIds;
 
         [BsonConstructor]
-        public Exercise(string id, IAnswer answer, IQuestion question, List<string> usedCardsIds)
+        [JsonConstructor]
+        public Exercise(Guid id, IAnswer answer, IQuestion question, List<Guid> usedCardsIds)
         {
             Id = id;
             Answer = answer;
@@ -25,10 +32,10 @@ namespace Flashcards
 
         public Exercise(IAnswer answer, IQuestion question)
         {
-            Id = GuidGenerator.GenerateGuid();
+            Id = Guid.NewGuid();
             Answer = answer;
             Question = question;
-            UsedCardsIds = new List<string>();
+            UsedCardsIds = new List<Guid>();
         }
 
         protected bool Equals(Exercise other)

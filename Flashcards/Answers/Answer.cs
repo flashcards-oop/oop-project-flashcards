@@ -1,4 +1,4 @@
-namespace Flashcards
+namespace Flashcards.Answers
 {
     public interface IAnswer
     {

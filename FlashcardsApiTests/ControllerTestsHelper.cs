@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FakeItEasy;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using FlashcardsApi;
-using Microsoft.Extensions.Options;
 
 namespace FlashcardsApiTests
 {
@@ -24,7 +21,7 @@ namespace FlashcardsApiTests
 
         public static void AttachUserToControllerContext(Controller controller, string userName)
         {
-            var claims = new List<Claim>()
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName)
             };
@@ -32,7 +29,7 @@ namespace FlashcardsApiTests
             var claimsPrincipal = new ClaimsPrincipal(identity);
             controller.ControllerContext = new ControllerContext
             {
-                HttpContext = new DefaultHttpContext()
+                HttpContext = new DefaultHttpContext
                 {
                     User = claimsPrincipal
                 }

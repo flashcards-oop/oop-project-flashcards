@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Flashcards;
@@ -6,6 +7,7 @@ using FlashcardsApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Threading;
+using Flashcards.Storages;
 
 namespace FlashcardsApi.Controllers
 {
@@ -40,7 +42,7 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}", Name = "GetCollectionById")]
-        public async Task<ActionResult> GetCollection(string id, CancellationToken token)
+        public async Task<ActionResult> GetCollection(Guid id, CancellationToken token)
         {
             var collection = await storage.FindCollection(id, token);
             if (collection == null)
@@ -53,7 +55,7 @@ namespace FlashcardsApi.Controllers
 
         [Authorize]
         [HttpGet("{id}/cards", Name = "GetCollectionCards")]
-        public async Task<ActionResult> GetCollectionCards(string id, CancellationToken token)
+        public async Task<ActionResult> GetCollectionCards(Guid id, CancellationToken token)
         {
             var collection = await storage.FindCollection(id, token);
             if (collection == null)
@@ -65,7 +67,7 @@ namespace FlashcardsApi.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeleteCollection([FromBody] string id, CancellationToken token)
+        public async Task<ActionResult> DeleteCollection([FromBody] Guid id, CancellationToken token)
         {
             var collection = await storage.FindCollection(id, token);
             if (collection == null)

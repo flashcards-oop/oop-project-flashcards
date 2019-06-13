@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Flashcards;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Threading;
+using Flashcards.Answers;
+using Flashcards.Storages;
 using Flashcards.TestProcessing;
 
 namespace FlashcardsApi.Controllers
@@ -79,7 +82,7 @@ namespace FlashcardsApi.Controllers
             if (!User.OwnsResource(test))
                 return Forbid();
 
-            var userAnswers = new Dictionary<string, IAnswer>();
+            var userAnswers = new Dictionary<Guid, IAnswer>();
             foreach (var answer in answers.Answers)
             {
                 if (!userAnswers.ContainsKey(answer.Id))

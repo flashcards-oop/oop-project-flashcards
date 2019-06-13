@@ -2,7 +2,7 @@
 using System.Linq;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Flashcards
+namespace Flashcards.Answers
 {
     public class MatchingAnswer : IAnswer
     {
