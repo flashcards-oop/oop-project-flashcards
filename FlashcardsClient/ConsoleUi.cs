@@ -8,26 +8,13 @@ namespace FlashcardsClient
     {
         private string userName;
         private FlashcardsClient flashcardsClient;
-        private readonly List<ConsoleCommand> commands = new List<ConsoleCommand>();
+        private readonly List<ConsoleCommand> commands;
 
-        public ConsoleUi()
+        public ConsoleUi(List<ConsoleCommand> commands)
         {
-            RegisterCommands();
+            this.commands = commands;
             Console.WriteLine("Hello! Input your name please");
             ChangeUser();
-        }
-
-        private void RegisterCommands()
-        {
-            commands.Add(new AddCardCommand());
-            commands.Add(new CardsCommand());
-            commands.Add(new CheckTestCommand());
-            commands.Add(new CollectionCardsCommand());
-            commands.Add(new CollectionsCommand());
-            commands.Add(new CreateCollectionCommand());
-            commands.Add(new CreateTestCommand());
-            commands.Add(new DeleteCardCommand());
-            commands.Add(new DeleteCollectionCommand());
         }
 
         private void Help()
