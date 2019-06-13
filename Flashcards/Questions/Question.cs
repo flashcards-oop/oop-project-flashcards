@@ -1,4 +1,4 @@
-namespace Flashcards
+namespace Flashcards.Questions
 {
     public interface IQuestion
     {

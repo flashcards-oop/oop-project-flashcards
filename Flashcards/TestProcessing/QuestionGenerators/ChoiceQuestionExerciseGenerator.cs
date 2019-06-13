@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Flashcards.Answers;
+using Flashcards.Infrastructure;
+using Flashcards.Questions;
 
-namespace Flashcards.QuestionGenerators
+namespace Flashcards.TestProcessing.QuestionGenerators
 {
     public class ChoiceQuestionExerciseGenerator : IExerciseGenerator
     {
-        private static readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random());
+        private static readonly ThreadLocal<Random> Random = new ThreadLocal<Random>(() => new Random());
 
         public ChoiceQuestionExerciseGenerator(int amountOfChoices = 4)
         {
@@ -26,7 +29,7 @@ namespace Flashcards.QuestionGenerators
             if (cards.Count != RequiredAmountOfCards)
                 throw new ArgumentException("Invalid amount of cards");
 
-            var targetCard = cards[random.Value.Next(RequiredAmountOfCards)];
+            var targetCard = cards[Random.Value.Next(RequiredAmountOfCards)];
             var choices = cards.Select(card => card.Term).ToList();
             choices.Shuffle();
 

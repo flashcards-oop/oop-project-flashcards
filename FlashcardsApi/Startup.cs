@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Flashcards;
-using Flashcards.QuestionGenerators;
+using Flashcards.Storages;
 using FlashcardsApi.Config;
 using FlashcardsApi.Mongo;
 using Microsoft.IdentityModel.Tokens;

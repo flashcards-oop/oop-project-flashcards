@@ -67,13 +67,12 @@ namespace FlashcardsClient
             var request = new RestRequest("api/cards/create");
             request.AddAuthorization(token);
             request.AddJsonApp();
-            var body = new Dictionary<string, string>
+            request.AddJsonBody(new CardModel
             {
-                ["collectionId"] = card.CollectionId,
-                ["term"] = card.Term,
-                ["definition"] = card.Definition
-            };
-            request.AddJsonBody(body);
+                CollectionId = card.CollectionId, 
+                Term = card.Term, 
+                Definition = card.Definition
+            });
             client.Post(request);
         }
 

@@ -20,7 +20,7 @@ namespace FlashcardsClient.ConsoleCommands
             var definition = Console.ReadLine();
             var card = new Card(term, definition, userName, collections[number].Id);
             client.AddCardToCollection(card);
-            Console.WriteLine($"Card created and added to collection '{collections[number]}'");
+            Console.WriteLine($"Card created and added to collection '{collections[number].Name}'");
         }
     }
 }

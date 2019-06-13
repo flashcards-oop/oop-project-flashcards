@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using FlashcardsApi.Controllers;
 using FlashcardsApi.Models;
@@ -7,28 +8,32 @@ using Microsoft.AspNetCore.Mvc;
 using FluentAssertions;
 using System.Threading;
 using System.Threading.Tasks;
+using Flashcards.Storages;
 
 namespace FlashcardsApiTests
 {
     [TestFixture]
     public class CardsController_Tests
     {
-        Card[] cards = new[]
-            {
-                new Card("t1", "d1", "admin", "coll1", "card0"),
-                new Card("t2", "d2", "admin", "coll1", "card1")
-            };
+        private static readonly Guid Id1 = Guid.NewGuid();
+        private static readonly Guid Id2 = Guid.NewGuid();
 
-        CardDto cardDto = new CardDto()
+        private readonly Card[] cards = 
+        {
+            new Card("t1", "d1", "admin", Id1),
+            new Card("t2", "d2", "admin", Id2)
+        };
+
+        private readonly CardDto cardDto = new CardDto
         {
             Term = "term",
             Definition = "definition",
-            CollectionId = "coll2"
+            CollectionId = Id2
         };
 
-        Collection ownedCollection = new Collection("name", "admin", "coll2");
-        Collection notOwnedCollection = new Collection("name", "user", "coll2");
-        Card notOwnedCard = new Card("t2", "d2", "user", "coll1", "card1");
+        private readonly Collection ownedCollection = new Collection("name", "admin", Id2);
+        private readonly Collection notOwnedCollection = new Collection("name", "user", Id2);
+        private readonly Card notOwnedCard = new Card("t2", "d2", "user", Id1);
 
         IStorage fakeStorage;
         CardsController controller;
@@ -55,7 +60,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task CreateCard_ShouldAddNewCard()
         {
-            A.CallTo(() => fakeStorage.FindCollection(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCollection(A<Guid>._, default(CancellationToken)))
                 .Returns(ownedCollection);
            
             var result = await controller.CreateCard(cardDto, default(CancellationToken));
@@ -71,7 +76,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task CreateCard_ShouldReturnUnprocessable_WhenCannotFindCollection()
         {
-            A.CallTo(() => fakeStorage.FindCollection(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCollection(A<Guid>._, default(CancellationToken)))
                 .Returns<Collection>(null);
 
             var result = await controller.CreateCard(cardDto, default(CancellationToken));
@@ -82,7 +87,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task CreateCard_ShouldForbid_WhenCollectionIsNotOwned()
         {
-            A.CallTo(() => fakeStorage.FindCollection(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCollection(A<Guid>._, default(CancellationToken)))
                 .Returns(notOwnedCollection);
 
             var result = await controller.CreateCard(cardDto, default(CancellationToken));
@@ -93,10 +98,10 @@ namespace FlashcardsApiTests
         [Test]
         public async Task GetById_ShouldReturnNotFound_WhenCannotFindCard()
         {
-            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCard(A<Guid>._, default(CancellationToken)))
                 .Returns<Card>(null);
 
-            var result = await controller.GetById("id", default(CancellationToken));
+            var result = await controller.GetById(Guid.NewGuid(), default(CancellationToken));
 
             result.Result.Should().BeOfType<NotFoundResult>();
         }
@@ -104,7 +109,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task GetById_ShouldForbid_WhenCardIsNotOwned()
         {
-            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCard(A<Guid>._, default(CancellationToken)))
                 .Returns(notOwnedCard);
 
             var result = await controller.GetById(notOwnedCard.Id, default(CancellationToken));
@@ -115,7 +120,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task GetById_ShouldReturnRequestedCard()
         {
-            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCard(A<Guid>._, default(CancellationToken)))
                 .Returns(cards[0]);
 
             var result = await controller.GetById(cards[0].Id, default(CancellationToken));
@@ -127,7 +132,7 @@ namespace FlashcardsApiTests
         [Test]
         public async Task DeleteCard_ShouldDeleteCard()
         {
-            A.CallTo(() => fakeStorage.FindCard(A<string>._, default(CancellationToken)))
+            A.CallTo(() => fakeStorage.FindCard(A<Guid>._, default(CancellationToken)))
                 .Returns(cards[0]);
 
             var result = await controller.DeleteCard(cards[0].Id, default(CancellationToken));

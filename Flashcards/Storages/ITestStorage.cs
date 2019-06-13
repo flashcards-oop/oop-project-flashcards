@@ -1,12 +1,13 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Flashcards
+namespace Flashcards.Storages
 {
     public interface ITestStorage
     {
         Task AddTest(Test test, CancellationToken token = default(CancellationToken));
-        Task<Test> FindTest(string testId, CancellationToken token = default(CancellationToken));
-        Task DeleteTest(string testId, CancellationToken token = default(CancellationToken));
+        Task<Test> FindTest(Guid testId, CancellationToken token = default(CancellationToken));
+        Task DeleteTest(Guid testId, CancellationToken token = default(CancellationToken));
     }
 }

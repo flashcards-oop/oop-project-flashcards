@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace Flashcards
+namespace Flashcards.Answers
 {
     public class ChoiceAnswer : IAnswer
     {

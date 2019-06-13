@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace FlashcardsApi.Models
@@ -16,11 +17,11 @@ namespace FlashcardsApi.Models
 
     public class TestQueryDto
     {
-        public string CollectionId { get; }
+        public Guid CollectionId { get; }
         public readonly List<TestBlockDto> Blocks;
-        public FilterDto Filter;
+        public readonly FilterDto Filter;
 
-        public TestQueryDto(string collectionId, List<TestBlockDto> blocks, FilterDto filter)
+        public TestQueryDto(Guid collectionId, List<TestBlockDto> blocks, FilterDto filter)
         {
             CollectionId = collectionId;
             Blocks = blocks;

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Flashcards.Answers;
+using Flashcards.Infrastructure;
+using Flashcards.Questions;
 
-namespace Flashcards.QuestionGenerators
+namespace Flashcards.TestProcessing.QuestionGenerators
 {
     public class MatchingQuestionExerciseGenerator : IExerciseGenerator
     {

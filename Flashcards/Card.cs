@@ -1,13 +1,17 @@
+using System;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+
+// ReSharper disable All
 
 namespace Flashcards
 {
     public class Card : IOwnedResource
     {
         [BsonId]
-        public string Id { get; }
+        public Guid Id { get; set; }
         [BsonElement]
-        public string CollectionId { get; }
+        public Guid CollectionId { get; }
         [BsonElement]
         public string Term { get; }
         [BsonElement]
@@ -18,10 +22,21 @@ namespace Flashcards
         public string OwnerLogin { get; }
 
         [BsonConstructor]
-        public Card(string term, string definition, string ownerLogin, string collectionId, 
-            string id = null, int awareness = 0)
+        [JsonConstructor]
+        public Card(string term, string definition, string ownerLogin, Guid collectionId, 
+            Guid id, int awareness = 0)
         {
-            Id = id ?? GuidGenerator.GenerateGuid();
+            Id = id;
+            CollectionId = collectionId;
+            Term = term;
+            Definition = definition;
+            Awareness = awareness;
+            OwnerLogin = ownerLogin;
+        }
+        
+        public Card(string term, string definition, string ownerLogin, Guid collectionId, int awareness = 0)
+        {
+            Id = Guid.NewGuid();
             CollectionId = collectionId;
             Term = term;
             Definition = definition;

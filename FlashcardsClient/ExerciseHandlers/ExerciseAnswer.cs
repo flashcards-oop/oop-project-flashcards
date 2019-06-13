@@ -1,10 +1,11 @@
-﻿using Flashcards;
+﻿using System;
+using Flashcards.Answers;
 
 namespace FlashcardsClient
 {
     public class ExerciseAnswer
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public IAnswer Answer { get; set; }
     }
 }
