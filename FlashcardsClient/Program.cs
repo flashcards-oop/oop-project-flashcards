@@ -1,25 +1,20 @@
-﻿using System;
-using System.Net.Http;
-using RestSharp;
+﻿using Ninject;
+using Ninject.Extensions.Conventions;
 
 namespace FlashcardsClient
 {
-    class Program
+    public static class Program
     {
-        static void AddUser(string userName)
+        public static void Main()
         {
-            var client = new RestClient("http://localhost:17720");
-            var request = new RestRequest("api/users/create");
-            request.AddJsonBody(userName);
+            var container = new StandardKernel();
+            container.Bind(configure => configure
+                .FromThisAssembly()
+                .SelectAllClasses()
+                .BindAllBaseClasses());
+            var ui = container.Get<ConsoleUi>();
 
-            var response = client.Post(request);
-            Console.WriteLine(response.StatusCode);
-        }
-
-        static void Main(string[] args)
-        {
-            Console.WriteLine("start");
-            AddUser("Vika");
+            ui.Run();
         }
     }
 }
