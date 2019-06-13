@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FlashcardsClient.ConsoleCommands;
 
 namespace FlashcardsClient
 {
@@ -29,16 +30,16 @@ namespace FlashcardsClient
             commands.Add(new DeleteCollectionCommand());
         }
 
-        public void Help()
+        private void Help()
         {
-            Console.WriteLine("Help for FlaschcardsClient");
+            Console.WriteLine("Help for FlashcardsClient");
             Console.WriteLine("-h Help");
             foreach (var command in commands)
                 Console.WriteLine($"{command.Name} {command.Help}");
             Console.WriteLine("-off Turns off the application");
         }
 
-        public void ChangeUser()
+        private void ChangeUser()
         {
             userName = Console.ReadLine();
             flashcardsClient = new FlashcardsClient(userName);
@@ -63,7 +64,7 @@ namespace FlashcardsClient
                         Help();
                         break;
                     }
-                    if (command.Name == userCommand)
+                    if (command.Name.Equals(userCommand))
                     {
                         command.Execute(flashcardsClient, userName);
                         break;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace FlashcardsClient.Infrastructure
+namespace FlashcardsClient
 {
     public class TestAnswers
     {

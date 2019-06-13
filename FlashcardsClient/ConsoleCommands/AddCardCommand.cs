@@ -1,7 +1,7 @@
 ﻿using System;
 using Flashcards;
 
-namespace FlashcardsClient
+namespace FlashcardsClient.ConsoleCommands
 {
     public class AddCardCommand : ConsoleCommand
     {

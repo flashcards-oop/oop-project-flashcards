@@ -1,6 +1,6 @@
 ﻿using RestSharp;
 
-namespace FlashcardsClient
+namespace FlashcardsClient.Infrastructure
 {
     public static class Extensions
     {

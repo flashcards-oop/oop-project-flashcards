@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace FlashcardsClient
+﻿namespace FlashcardsClient.ConsoleCommands
 {
     public abstract class ConsoleCommand
     {

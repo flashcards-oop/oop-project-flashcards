@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlashcardsClient
+namespace FlashcardsClient.ConsoleCommands
 {
     public class DeleteCardCommand : ConsoleCommand
     {

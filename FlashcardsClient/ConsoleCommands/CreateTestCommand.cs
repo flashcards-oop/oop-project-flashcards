@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace FlashcardsClient
+namespace FlashcardsClient.ConsoleCommands
 {
     public class CreateTestCommand : ConsoleCommand
     {
-        private void AddQuestionRequest(List<QuestionRequest> request, string enteringText, string type)
+        private static void AddQuestionRequest(ICollection<TestBlock> request, string enteringText, string type)
         {
             Console.WriteLine(enteringText);
             var number = int.Parse(Console.ReadLine());
             if (number > 0)
-                request.Add(new QuestionRequest { Type = type, Amount = number });
+                request.Add(new TestBlock { Type = type, Amount = number });
         }
 
         public CreateTestCommand() : base("-test", "Generates new test")
@@ -30,8 +29,8 @@ namespace FlashcardsClient
                 if (cardsCount != 0)
                 {
                     Console.WriteLine(
-                        "Here you can choose how much questioons of each type you need. You also can choose 0 if you don't want one of types");
-                    var request = new List<QuestionRequest>();
+                        "Here you can choose how much questions of each type you need. You also can choose 0 if you don't want one of types");
+                    var request = new List<TestBlock>();
                     AddQuestionRequest(request, "Enter the number of choice question", "choice");
                     AddQuestionRequest(request, "Enter the number of matching question", "matching");
                     AddQuestionRequest(request, "Enter the number of open answer question", "open");

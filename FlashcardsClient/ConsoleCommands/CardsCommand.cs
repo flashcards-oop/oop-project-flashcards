@@ -1,5 +1,5 @@
 ﻿
-namespace FlashcardsClient
+namespace FlashcardsClient.ConsoleCommands
 {
     public class CardsCommand : ConsoleCommand
     {

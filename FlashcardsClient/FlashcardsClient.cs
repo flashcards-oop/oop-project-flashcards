@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using RestSharp;
 using Flashcards;
@@ -14,7 +13,10 @@ namespace FlashcardsClient
         private readonly string token;
         public List<Card> LastReceivedCards;
         public List<Collection> LastReceivedCollections;
-        public RequestedTest LastRecievedTest;
+        public Test LastReceivedTest;
+
+        private static readonly JsonSerializerSettings SerializerSettings = 
+            new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
 
         public FlashcardsClient(string name)
         {
@@ -23,10 +25,10 @@ namespace FlashcardsClient
             token = GetToken(name);
             LastReceivedCards = null;
             LastReceivedCollections = null;
-            LastRecievedTest = null;
+            LastReceivedTest = null;
         }
 
-        public void AddUser(string userName)
+        private void AddUser(string userName)
         {
             var request = new RestRequest("api/users/create");
             request.AddJsonBody(userName);
@@ -57,15 +59,6 @@ namespace FlashcardsClient
             var parsedResponse = JsonConvert.DeserializeObject<List<Collection>>(response);
             LastReceivedCollections = new List<Collection>();
             LastReceivedCollections.AddRange(parsedResponse);
-            return parsedResponse;
-        }
-
-        public Collection GetCollectionById(string id)
-        {
-            var request = new RestRequest($"api/collections/{id}");
-            request.AddAuthorization(token);
-            var response = client.Get(request).Content;
-            var parsedResponse = JsonConvert.DeserializeObject<Collection>(response);
             return parsedResponse;
         }
 
@@ -123,16 +116,6 @@ namespace FlashcardsClient
             return parsedResponse;
         }
 
-        public Card GetCardById(string id)
-        {
-            var request = new RestRequest($"api/cards/{id}");
-            request.AddAuthorization(token);
-            request.AddJsonApp();
-            var response = client.Get(request).Content;
-            var parsedResponse = JsonConvert.DeserializeObject<Card>(response);
-            return parsedResponse;
-        }
-
         public void DeleteCard(int number)
         {
             var id = LastReceivedCards[number].Id;
@@ -143,7 +126,7 @@ namespace FlashcardsClient
             GetAllCards();
         }
 
-        public void GenerateTest(int number, List<QuestionRequest> userRequests)
+        public void GenerateTest(int number, List<TestBlock> userRequests)
         {
             var id = LastReceivedCollections[number].Id;
             var request = new RestRequest("api/tests/generate");
@@ -156,19 +139,18 @@ namespace FlashcardsClient
             };
             request.AddJsonBody(body);
             var response = client.Post(request).Content;
-            var parsedResponse = JsonConvert.DeserializeObject<RequestedTest>(response, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-            LastRecievedTest = parsedResponse;
+            var parsedResponse = JsonConvert.DeserializeObject<Test>(response, SerializerSettings);
+            LastReceivedTest = parsedResponse;
         }
 
-        public CheckedTest GetCheckedTest(TestAnswers solution)
+        public TestVerdict GetCheckedTest(TestAnswers solution)
         {
             var request = new RestRequest("api/tests/check");
             request.AddAuthorization(token);
             request.AddJsonApp();
-            request.AddJsonBody(JsonConvert.SerializeObject(solution,
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }));
+            request.AddJsonBody(JsonConvert.SerializeObject(solution, SerializerSettings));
             var response = client.Post(request).Content;
-            var parsedResponse = JsonConvert.DeserializeObject<CheckedTest>(response, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+            var parsedResponse = JsonConvert.DeserializeObject<TestVerdict>(response, SerializerSettings);
             return parsedResponse;
         }
     }

@@ -16,13 +16,12 @@ namespace FlashcardsClient
             return collections;
         }
 
-        public static List<Card> GetCards(FlashcardsClient client)
+        public static void GetCards(FlashcardsClient client)
         {
             var cards = client.GetAllCards() ?? client.LastReceivedCards;
             Console.WriteLine("This is your cards");
             for (var i = 0; i < cards.Count; i++)
                 Console.WriteLine($"{i}) {cards[i].Term} — {cards[i].Definition}");
-            return cards;
         }
     }
 }
