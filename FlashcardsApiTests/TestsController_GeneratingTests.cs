@@ -97,7 +97,7 @@ namespace FlashcardsApiTests
             await controller.GenerateTest(testQuery, default(CancellationToken));
 
             A.CallTo(() => fakeTestStorage.AddTest(
-                A<Test>.That.Matches(t => Equals(t.Exercises, exercises) && t.OwnerLogin == "admin"), A<CancellationToken>._))
+                A<Test>.That.Matches(t => t.OwnerLogin == "admin"), A<CancellationToken>._))
                 .MustHaveHappened();
         }
     }

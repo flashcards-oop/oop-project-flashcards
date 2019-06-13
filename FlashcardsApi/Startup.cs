@@ -52,11 +52,12 @@ namespace FlashcardsApi
 
             var config = new ServerConfig();
             Configuration.Bind(config);
-            var context = new MongoContext(config.MongoDb);
             
-            services.AddSingleton<IStorage>(new MongoCardStorage(context));
-	        services.AddSingleton<ITestStorage>(new MongoTestStorage(context));
-            services.AddSingleton<IUserStorage>(new MongoUserStorage(context));
+            services.AddSingleton(config.MongoDb);
+            services.AddSingleton<MongoContext>();
+            services.AddSingleton<IStorage, MongoCardStorage>();
+	        services.AddSingleton<ITestStorage, MongoTestStorage>();
+            services.AddSingleton<IUserStorage, MongoUserStorage>();
 
             services.Scan(scan => scan
                 .FromAssemblyOf<IExerciseGenerator>()
